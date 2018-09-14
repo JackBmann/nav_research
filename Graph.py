@@ -13,7 +13,7 @@ class Graph:
     :field connections: a dictionary of edges. Key is source, value is destination
     :field seen: a set of seen verticies
     '''
-    verticies = []  # list of verticies contained by the graph
+    vertices = []  # list of vertices contained by the graph
     edges = {}  # dictionary of edges in the graph. Key is a tuple of (src,dest) and value is distance, an int
     connections = {}  # dictionary of edges. Key is src, value is dest
     seen = set()
@@ -21,17 +21,18 @@ class Graph:
     def __init__(self, edges):
         '''
         Constructor for the Graph Class
+        Currently are bidrectional paths
         :param edges: A list of edges in the graph
         :return void
         '''
-        verticies = set()
+        vertices = set()
         connections = {}
         self.edges = edges
         for edge in edges:
-            if edge[0] not in verticies:
-                verticies.add(edge[0])
-            if edge[1] not in verticies:
-                verticies.add(edge[1])
+            if edge[0] not in vertices:
+                vertices.add(edge[0])
+            if edge[1] not in vertices:
+                vertices.add(edge[1])
 
             if edge[0] not in connections:
                 connections[edge[0]] = [edge[1]]
@@ -42,10 +43,10 @@ class Graph:
             else:
                 connections[edge[1]].append(edge[0])
 
-        self.verticies = list(verticies)
+        self.vertices = list(vertices)
         self.connections = connections
 
-    def connnected(self, src, dest):
+    def connected(self, src, dest):
         '''
         Checks if two verticies are immediately connected in the graph
         :param src: the source vertex
