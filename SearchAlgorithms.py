@@ -15,10 +15,10 @@ def path_distance(graph, path):
     :return: distance, an int/float whose value represents the distance from the start of the path to the end of the path
     """
     distance = 0
-    current = 0
-    while current != len(path)-1:
-        distance += graph.edges((path[current], path[current + 1]))
-        current += 1
+    current = len(path)-1
+    while current != 0:
+        distance += graph.edges[(path[current], path[current-1])]
+        current -= 1
     return distance
 
 
@@ -32,21 +32,23 @@ def bfs(graph, src, dest):
     """
     best_path = []
     best_path_length = maxsize
+    graph.seen.add(src)
     for connection in graph.connections[src]:
         path = []
         if connection == dest:
             path.append(connection)
+            path.append(src)
             return path
         else:
             if connection in Graph.seen:
-                return []
+                continue
             Graph.seen.add(connection)
             path = bfs(graph, connection, dest)
             if path == []:
                 continue
             pDistance = path_distance(graph, path)
             if pDistance < best_path_length:
-                path.append(connection)
+                path.append(src)
                 best_path = path
                 best_path_length = pDistance
     return best_path

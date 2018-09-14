@@ -19,6 +19,7 @@ class Graph:
     def __init__(self, edges):
         """
         Constructor for the Graph Class
+        Currently are bidrectional paths
         :param edges: A list of edges in the graph
         :return void
         """
