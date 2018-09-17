@@ -2,8 +2,7 @@
 Created by Michael Bolot and John (Jack) Baumann for 2018 research
 Designed to house the search algorithms to be used on the graph
 """
-
-from Graph import Graph
+from queue import PriorityQueue
 from sys import maxsize
 
 
@@ -22,7 +21,7 @@ def path_distance(graph, path):
     return distance
 
 
-def bfs(graph, src, dest):
+def dfs(graph, src, dest):
     """
     Searches for a path from src to dest, using a naive breadth first search
     :param graph: The graph object, with specifications of Graph.py
@@ -40,11 +39,11 @@ def bfs(graph, src, dest):
             path.append(src)
             return path
         else:
-            if connection in Graph.seen:
+            if connection in graph.seen:
                 continue
-            Graph.seen.add(connection)
-            path = bfs(graph, connection, dest)
-            if path == []:
+            graph.seen.add(connection)
+            path = dfs(graph, connection, dest)
+            if not path:
                 continue
             pDistance = path_distance(graph, path)
             if pDistance < best_path_length:
@@ -52,6 +51,41 @@ def bfs(graph, src, dest):
                 best_path = path
                 best_path_length = pDistance
     return best_path
+
+def dijkstra(graph, src, dest):
+    """
+    :param graph: graph that will be used to find optimal path
+    :param src: the source vertex to search from.
+    :param dest: the destination vertext to search to
+    :return: best_path, a list which is the optimal path
+    """
+    best_path = []  # the return variable, the best_path to take
+    distance = {}  # the distance value of each vertex
+    parents = {}  # the parent of each vertex, with respect to optimal path
+    Q = PriorityQueue()
+    for vertex in graph.vertices:
+        if vertex == src:
+            distance[vertex] = 0
+            Q.put((0, src))
+            continue
+        distance[vertex] = maxsize
+        parents[vertex] = None
+        Q.put((maxsize, vertex))
+
+    while not Q.empty():
+        current_vertex = Q.get()
+        if current_vertex == dest:
+            added = current_vertex
+            while added != src:
+                best_path.append(parents[added])
+            return best_path
+
+        for connection in graph.connections[current_vertex]:
+            best_move = distance[current_vertex] + graph.edges[(current_vertex, connection)]
+            if best_move < distance[current_vertex]:
+                distance[current_vertex] = best_move
+                parents[current_vertex] = connection
+
 
 
 def a_star(graph, src, dest):
