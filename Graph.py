@@ -36,10 +36,10 @@ class Graph:
                 connections[edge[0]] = [edge[1]]
             else:
                 connections[edge[0]].append(edge[1])
-            if edge[1] not in connections:
-                connections[edge[1]] = [edge[0]]
-            else:
-                connections[edge[1]].append(edge[0])
+            #if edge[1] not in connections:
+            #    connections[edge[1]] = [edge[0]]
+            #else:
+            #    connections[edge[1]].append(edge[0])
 
         self.vertices = list(vertices)
         self.connections = connections

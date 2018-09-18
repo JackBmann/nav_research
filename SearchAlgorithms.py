@@ -32,6 +32,8 @@ def dfs(graph, src, dest):
     best_path = []
     best_path_length = maxsize
     graph.seen.add(src)
+    if src not in graph.connections:
+        return []
     for connection in graph.connections[src]:
         path = []
         if connection == dest:
@@ -73,18 +75,22 @@ def dijkstra(graph, src, dest):
         Q.put((maxsize, vertex))
 
     while not Q.empty():
-        current_vertex = Q.get()
+        current_vertex = Q.get()[1]
         if current_vertex == dest:
             added = current_vertex
+            best_path.append(added)
             while added != src:
                 best_path.append(parents[added])
+                added = parents[added]
             return best_path
 
+        if current_vertex not in graph.connections:
+            continue
         for connection in graph.connections[current_vertex]:
             best_move = distance[current_vertex] + graph.edges[(current_vertex, connection)]
-            if best_move < distance[current_vertex]:
-                distance[current_vertex] = best_move
-                parents[current_vertex] = connection
+            if best_move < distance[connection]:
+                distance[connection] = best_move
+                parents[connection] = current_vertex
 
 
 
