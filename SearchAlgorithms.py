@@ -12,7 +12,8 @@ def path_distance(graph, path):
     Finds the distance of a path
     :param graph: the graph the path is on
     :param path: the path whose distance is to be evaluated
-    :return: distance, an int/float whose value represents the distance from the start of the path to the end of the path
+    :return: distance, an int/float whose value represents the distance
+             from the start of the path to the end of the path
     """
     distance = 0
     current = len(path)-1
@@ -63,34 +64,35 @@ def dfs(graph, src, dest):
             path = dfs(graph, connection, dest)
             if not path:
                 continue
-            pDistance = path_distance(graph, path)
-            if pDistance < best_path_length:
+            p_dist = path_distance(graph, path)
+            if p_dist < best_path_length:
                 path.append(src)
                 best_path = path
-                best_path_length = pDistance
+                best_path_length = p_dist
     return best_path
+
 
 def dijkstra(graph, src, dest):
     """
     :param graph: graph that will be used to find optimal path
-    :param src: the source vertex to search from.
-    :param dest: the destination vertext to search to
     :return: a list which is the optimal path
+    :param src: the source vertex to search from
+    :param dest: the destination vertex to search to
     """
     distance = {}  # the distance value of each vertex
     parents = {}  # the parent of each vertex, with respect to optimal path
-    Q = PriorityQueue()
+    q = PriorityQueue()
     for vertex in graph.vertices:
         if vertex == src:
             distance[vertex] = 0
-            Q.put((0, src))
+            q.put((0, src))
             continue
         distance[vertex] = maxsize
         parents[vertex] = None
-        Q.put((maxsize, vertex))
+        q.put((maxsize, vertex))
 
-    while not Q.empty():
-        current_vertex = Q.get()[1]
+    while not q.empty():
+        current_vertex = q.get()[1]
         if current_vertex == dest:
             return reconstruct_path(parents, src, dest)
         if current_vertex not in graph.connections:
@@ -100,7 +102,6 @@ def dijkstra(graph, src, dest):
             if best_move < distance[connection]:
                 distance[connection] = best_move
                 parents[connection] = current_vertex
-
 
 
 def a_star(graph, src, dest):
