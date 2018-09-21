@@ -6,7 +6,7 @@ Created By Michael Bolot and John (Jack) Baumann for 2018 research
 class Graph:
     """
     Graph Class
-    :field vertices: A list of vertices contained by the graph
+    :field vertices: A list of vertices contained by the graph (uses vertex objects)
     :field edges: A dictionary of the edges. Key is a tuple of (src, dest) and value is distance, an int
     :field connections: a dictionary of edges. Key is source, value is destination
     :field seen: a set of seen vertices
@@ -67,3 +67,25 @@ class Graph:
         else:
             return self.edges[(src, dest)]
 
+
+class Vertex:
+    """
+    Vertex object for use in the graph
+    :field id: the identifier value, an int
+    :field x: the first gps coordinate in the pair
+    :field y: the second gps coordinate in the pair
+    """
+    id = 0  # basic initialization for id, should not be left at 0
+    x = 0.0  # basic initialization for x, should not be left at 0.0
+    y = 0.0  # basic initialization for y, should not be left at 0.0
+
+    def __init__(self, id, x, y):
+        """
+        Constructor for a vertex
+        :param id: the id for the vertex
+        :param x: the x coordinate for the vertex
+        :param y: the y coordinate for the vertex
+        """
+        self.id = id
+        self.x = x
+        self.y = y

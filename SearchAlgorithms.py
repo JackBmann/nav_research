@@ -4,6 +4,7 @@ Designed to house the search algorithms to be used on the graph
 """
 from queue import PriorityQueue
 from sys import maxsize
+from math import sqrt
 
 
 def path_distance(graph, path):
@@ -105,6 +106,7 @@ def dijkstra(graph, src, dest):
 def a_star(graph, src, dest):
     """
     Searches for a path from src to dest
+    Relies on the heuristic function hueristic(src, dest) to be distinguished from djikstra's
     :param graph: the graph object, with specifications of Graph.py
     :param src: the source vertex to search from
     :param dest: The destination vertex to find
@@ -138,6 +140,17 @@ def a_star(graph, src, dest):
             parents[connection] = current_vertex
 
     return path
+
+def heuristic(src, dest):
+    """
+    Heuristic function for a*
+    Currently just calculates the euclidean distance between src and dest to inform its descision
+    :param src: the source vertex (a vertex object)
+    :param dest: the destination vertex (a vertex object)
+    :return: distance, an number (float) value that represents the distance between src and dest
+    """
+    distance = sqrt((src.x - dest.x)**2 + (src.y - dest.y)**2)
+    return distance
 
 
 if __name__ == "__main__":
