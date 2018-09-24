@@ -38,6 +38,7 @@ def reconstruct_path(parents, src, dest):
     path.append(added)
     return path
 
+
 def dfs(graph, src, dest):
     """
     Searches for a path from src to dest, using a naive breadth first search
@@ -72,80 +73,53 @@ def dfs(graph, src, dest):
     return best_path
 
 
-def dijkstra(graph, src, dest):
+def dijkstra(graph, src, dest, heuristic):
     """
     :param graph: graph that will be used to find optimal path
-    :return: a list which is the optimal path
     :param src: the source vertex to search from
     :param dest: the destination vertex to search to
+    :param heuristic: the heuristic function used as a weight. Returns 0 for djikstra's, and non-zero for a*
+    :return: a list which is the optimal path
     """
     distance = {}  # the distance value of each vertex
     parents = {}  # the parent of each vertex, with respect to optimal path
     q = PriorityQueue()
     for vertex in graph.vertices:
-        if vertex == src:
-            distance[vertex] = 0
-            q.put((0, src))
+        added_vertex = graph.vertices[vertex]
+        if added_vertex == src:
+            distance[added_vertex] = 0
+            q.put((0, vertex))
             continue
-        distance[vertex] = maxsize
-        parents[vertex] = None
+        distance[added_vertex] = maxsize
+        parents[added_vertex] = None
         q.put((maxsize, vertex))
 
     while not q.empty():
-        current_vertex = q.get()[1]
+        current_vertex = graph.vertices[q.get()[1]]
         if current_vertex == dest:
             return reconstruct_path(parents, src, dest)
         if current_vertex not in graph.connections:
             continue
         for connection in graph.connections[current_vertex]:
-            best_move = distance[current_vertex] + graph.edges[(current_vertex, connection)]
+            best_move = distance[current_vertex] + heuristic(graph, current_vertex, connection)
             if best_move < distance[connection]:
                 distance[connection] = best_move
                 parents[connection] = current_vertex
 
-
-def a_star(graph, src, dest):
+def djikstra_heuristic(graph, src, dest):
     """
-    Searches for a path from src to dest
-    Relies on the heuristic function hueristic(src, dest) to be distinguished from djikstra's
-    :param graph: the graph object, with specifications of Graph.py
-    :param src: the source vertex to search from
-    :param dest: The destination vertex to find
-    :return: path, a path from src to dest (list of vertices, in order of route)
+    Heuristic for djikstra's, just returns the edge between src and dest
+    :param src: source vertex
+    :param dest: dest vertex
+    :return: the edge weight between src and dest, a number (float)
     """
-    path = []
-    Q = PriorityQueue
-    distance = {}
-    parents = {}
-    for vertex in graph.vertices:
-        if vertex == src:
-            distance[vertex] = 0
-            continue
-        distance[vertex] = maxsize
-        Q.put((distance[vertex], vertex))
-        parents[vertex] = None
+    return graph.edges[(src, dest)]
 
-    while not Q.empty():
-        current_vertex = Q.get()[1]
-        if current_vertex == dest:
-            return reconstruct_path(parents, src, dest)
-        path.append(current_vertex)
-        for connection in graph.connections[current_vertex]:
-            if connection in path:
-                continue
-            path.append(connection)
-            best_move = graph.edges([(current_vertex, connection)]) + distance[current_vertex]
-            if best_move >= distance[connection]:
-                continue
-            distance[connection] = best_move
-            parents[connection] = current_vertex
-
-    return path
-
-def heuristic(src, dest):
+def a_star_heuristic(graph, src, dest):
     """
     Heuristic function for a*
-    Currently just calculates the euclidean distance between src and dest to inform its descision
+    Currently just calculates the euclidean distance between src and dest to inform its decision
+    :param graph: The grpah for the function, not used
     :param src: the source vertex (a vertex object)
     :param dest: the destination vertex (a vertex object)
     :return: distance, an number (float) value that represents the distance between src and dest

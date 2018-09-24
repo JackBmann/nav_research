@@ -11,7 +11,7 @@ class Graph:
     :field connections: a dictionary of edges. Key is source, value is destination
     :field seen: a set of seen vertices
     """
-    vertices = []  # list of vertices contained by the graph
+    vertices = {} # list of vertices contained by the graph
     edges = {}  # dictionary of edges in the graph. Key is a tuple of (src,dest) and value is distance, an int
     connections = {}  # dictionary of edges. Key is src, value is dest
     seen = set()
@@ -23,25 +23,31 @@ class Graph:
         :param edges: A list of edges in the graph
         :return void
         """
-        vertices = set()
+        vertices = {}
         connections = {}
-        self.edges = edges
+        parsed_edges = {}
         for edge in edges:
-            if edge[0] not in vertices:
-                vertices.add(edge[0])
-            if edge[1] not in vertices:
-                vertices.add(edge[1])
+            first_vertex = Vertex(edge[0], 0, 0)
+            second_vertex = Vertex(edge[1], 0, 0)
 
-            if edge[0] not in connections:
-                connections[edge[0]] = [edge[1]]
+            if first_vertex.getID() not in vertices:
+                vertices[first_vertex.getID()] = first_vertex
             else:
-                connections[edge[0]].append(edge[1])
-            #if edge[1] not in connections:
-            #    connections[edge[1]] = [edge[0]]
-            #else:
-            #    connections[edge[1]].append(edge[0])
+                first_vertex = vertices[first_vertex.getID()]
 
-        self.vertices = list(vertices)
+            if second_vertex.getID() not in vertices:
+                vertices[second_vertex.getID()] = second_vertex
+            else:
+                second_vertex = vertices[second_vertex.getID()]
+
+            if first_vertex not in connections:
+                connections[first_vertex] = [second_vertex]
+            else:
+                connections[first_vertex].append(second_vertex)
+
+            parsed_edges[(first_vertex, second_vertex)] = edges[edge]
+        self.edges = parsed_edges
+        self.vertices = vertices
         self.connections = connections
 
     def connected(self, src, dest):
@@ -54,6 +60,16 @@ class Graph:
         if dest in self.connections[src]:
             return True
         return False
+
+    def getVertex(self, vertex_id):
+        """
+        Returns the vertex object associated with the id
+        :param vertex_id: the id of the vertex
+        :return: vertex, the found vertex
+        """
+        vertex = self.vertices[vertex_id]
+        return vertex
+
 
     def distance(self, src, dest):
         """
@@ -89,3 +105,24 @@ class Vertex:
         self.id = id
         self.x = x
         self.y = y
+
+    def getID(self):
+        """
+        Gets the id for the vertex
+        :return: id
+        """
+        return self.id
+
+    def getX(self):
+        """
+        Gets the x value for the vertex
+        :return: x
+        """
+        return self.x
+
+    def getY(self):
+        """
+        Gets the y value for the vertex
+        :return: y
+        """
+        return self.y
