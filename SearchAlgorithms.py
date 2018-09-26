@@ -125,7 +125,7 @@ def a_star_heuristic(graph, src, dest):
     :return: distance, an number (float) value that represents the distance between src and dest
     """
     distance = sqrt((src.x - dest.x)**2 + (src.y - dest.y)**2)
-    return distance
+    return distance + graph.edges[(src, dest)]
 
 
 if __name__ == "__main__":

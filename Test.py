@@ -15,6 +15,7 @@ for entry in dfs_List:
     print(entry.getID())
 Garph.seen = set()
 
+
 lister = dijkstra(Garph, Garph.getVertex(1), Garph.getVertex(9), djikstra_heuristic)
 print("Dijkstra:           ")
 for entry in lister:
