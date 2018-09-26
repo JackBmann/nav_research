@@ -22,6 +22,7 @@ def path_distance(graph, path):
         current -= 1
     return distance
 
+
 def reconstruct_path(parents, src, dest):
     """
     Helper function to reconstruct the path from dest to source
@@ -106,6 +107,7 @@ def dijkstra(graph, src, dest, heuristic):
                 distance[connection] = best_move
                 parents[connection] = current_vertex
 
+
 def djikstra_heuristic(graph, src, dest):
     """
     Heuristic for djikstra's, just returns the edge between src and dest
@@ -114,6 +116,7 @@ def djikstra_heuristic(graph, src, dest):
     :return: the edge weight between src and dest, a number (float)
     """
     return graph.edges[(src, dest)]
+
 
 def a_star_heuristic(graph, src, dest):
     """
