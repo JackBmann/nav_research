@@ -70,7 +70,6 @@ class Graph:
         vertex = self.vertices[vertex_id]
         return vertex
 
-
     def distance(self, src, dest):
         """
         Finds the distance between two connected vertices
@@ -105,6 +104,18 @@ class Vertex:
         self.id = id
         self.x = x
         self.y = y
+
+    def __hash__(self):
+        return hash((self.id, self.x, self.y))
+
+    def __eq__(self, other):
+        return (self.id == other.id) and (self.x == other.x) and (self.y == other.y)
+
+    def __repr__(self):
+        return "{0} @ 0x{1}".format(str(self.id), str(hex(id(self))).upper())
+
+    def __str__(self):
+        return str(self.id)
 
     def getID(self):
         """

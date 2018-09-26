@@ -4,18 +4,20 @@ from SearchAlgorithms import dfs, dijkstra, djikstra_heuristic
 
 Garph = Graph({(1, 2): 5, (2, 3): 3, (3, 9): 2, (1, 4): 1, (4, 6): 4, (4, 5): 6, (6, 7): 9, (5, 8): 1, (8, 9): 3})
 
-print(Garph.connections)
-print(Garph.vertices)
-print(Garph.edges)
-print("0 is : ", Garph.connections[Garph.getVertex(1)])
-print("1 is: ", Garph.getVertex(2))
-dfs_List = dfs(Garph, Garph.getVertex(1), Garph.getVertex(9))
-print("Depth First Search: ")
-for entry in dfs_List:
-    print(entry.getID())
-Garph.seen = set()
+print("Garph Connections: ", Garph.connections)
+print("Garph Vertices:    ", Garph.vertices)
+print("Garph Edges:       ", Garph.edges)
+print()
 
-lister = dijkstra(Garph, Garph.getVertex(1), Garph.getVertex(9), djikstra_heuristic)
-print("Dijkstra:           ")
-for entry in lister:
-    print(entry.getID())
+dfs_list = dfs(Garph, Garph.getVertex(1), Garph.getVertex(9))
+dfs_str = "" + str(dfs_list[0])
+for entry in dfs_list[1:]:
+    dfs_str += ", " + str(entry)
+print("Depth First Search: ", dfs_str)
+
+Garph.seen = set()
+dijkstra_list = dijkstra(Garph, Garph.getVertex(1), Garph.getVertex(9), djikstra_heuristic)
+dijkstra_str = "" + str(dijkstra_list[0])
+for entry in dijkstra_list[1:]:
+    dijkstra_str += ", " + str(entry)
+print("Dijkstra:           ", dijkstra_str)
