@@ -1,6 +1,5 @@
-from Graph import Graph
+from Graph import Graph, Vertex
 from SearchAlgorithms import dfs, dijkstra, djikstra_heuristic, a_star_heuristic
-
 
 Garph = Graph({(1, 2): 5, (2, 3): 3, (3, 9): 2, (1, 4): 1, (4, 6): 4, (4, 5): 6, (6, 7): 9, (5, 8): 1, (8, 9): 3})
 

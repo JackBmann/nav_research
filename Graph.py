@@ -27,8 +27,8 @@ class Graph:
         connections = {}
         parsed_edges = {}
         for edge in edges:
-            first_vertex = Vertex(edge[0], 0, 0)
-            second_vertex = Vertex(edge[1], 0, 0)
+            first_vertex = edge[0]
+            second_vertex = edge[1]
 
             if first_vertex.getID() not in vertices:
                 vertices[first_vertex.getID()] = first_vertex
@@ -137,3 +137,28 @@ class Vertex:
         :return: y
         """
         return self.y
+
+
+class Edge:
+    """
+    the
+    :field first_vertex: The first vertex of the edge, a vertex object
+    :field second_vertex: The second vertex of the edge, a vertex object
+    :field weight: the weight of the edge, an int/float
+    """
+    first_vertex = None
+    second_vertex = None
+    weight = None
+
+    def __init___(self, first_vertex, second_vertex, weight):
+        """
+        Constructor for the edge class
+        :param first_vertex: The first vertex of the edge, a vertex object
+        :param second_vertex: The second vertex of the edge, a vertex object
+        :param weight: the weight of the edge, an int/float
+        :return: nothing, because its a constructor
+        """
+        self.first_vertex = first_vertex
+        self.second_vertex = second_vertex
+        self.weight = weight
+
