@@ -1,7 +1,16 @@
 from Graph import Graph, Vertex
 from SearchAlgorithms import dfs, dijkstra, djikstra_heuristic, a_star_heuristic
 
-Garph = Graph({(1, 2): 5, (2, 3): 3, (3, 9): 2, (1, 4): 1, (4, 6): 4, (4, 5): 6, (6, 7): 9, (5, 8): 1, (8, 9): 3})
+one = Vertex(1,0,0)
+two = Vertex(2,0,0)
+three = Vertex(3,0,0)
+four = Vertex(4,0,0)
+five = Vertex(5,0,0)
+six = Vertex(6,0,0)
+seven = Vertex(7,0,0)
+eight = Vertex(8,0,0)
+nine = Vertex(9,0,0)
+Garph = Graph({(one, two): 5, (two, three): 3, (three, nine): 2, (one, four): 1, (four, six): 4, (four, five): 6, (six, seven): 9, (five, eight): 1, (eight, nine): 3})
 
 print("Garph Connections: ", Garph.connections)
 print("Garph Vertices:    ", Garph.vertices)
