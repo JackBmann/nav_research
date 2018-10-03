@@ -111,6 +111,7 @@ def dijkstra(graph, src, dest, heuristic):
 def djikstra_heuristic(graph, src, dest):
     """
     Heuristic for djikstra's, just returns the edge between src and dest
+    :param graph: the graph
     :param src: source vertex
     :param dest: dest vertex
     :return: the edge weight between src and dest, a number (float)

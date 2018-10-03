@@ -2,6 +2,7 @@ from kivy.app import App
 from kivy.uix.widget import Widget
 from Graph import Graph
 
+
 class GraphDisplayWidget(Widget):
     pass
 
@@ -24,7 +25,7 @@ class DisplayVertex(Widget):
         """
         self.x_position = vertex.get_longitude()
         self.y_position = vertex.get_latitude()
-        self.vertex_number = str(vertex.get_id())
+        self.vertex_number = str(vertex.get_identifier())
 
 
 def graph_to_kv(Graph):

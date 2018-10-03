@@ -11,7 +11,7 @@ class Graph:
     :field connections: a dictionary of edges. Key is source, value is destination
     :field seen: a set of seen vertices
     """
-    vertices = {} # list of vertices contained by the graph
+    vertices = {}  # list of vertices contained by the graph
     edges = {}  # dictionary of edges in the graph. Key is a tuple of (src,dest) and value is distance, an int
     connections = {}  # dictionary of edges. Key is src, value is dest
     seen = set()
@@ -61,7 +61,7 @@ class Graph:
             return True
         return False
 
-    def getVertex(self, vertex_id):
+    def get_vertex(self, vertex_id):
         """
         Returns the vertex object associated with the id
         :param vertex_id: the id of the vertex
@@ -90,41 +90,41 @@ class Vertex:
     :field latitude: the first gps coordinate in the pair
     :field longitude: the second gps coordinate in the pair
     """
-    id = 0  # basic initialization for id, should not be left at 0
+    identifier = 0  # basic initialization for id, should not be left at 0
     latitude = 0.0  # basic initialization for latitude, should not be left at 0.0
     longitude = 0.0  # basic initialization for longitude, should not be left at 0.0
 
-    def __init__(self, id, latitude, longitude):
+    def __init__(self, identifier, latitude, longitude):
         """
         Constructor for a vertex
-        :param id: the id for the vertex
+        :param identifier: the id for the vertex
         :param latitude: the latitude coordinate for the vertex
         :param longitude: the longitude coordinate for the vertex
         """
-        self.id = id
+        self.identifier = identifier
         self.latitude = latitude
         self.longitude = longitude
 
     def __hash__(self):
-        return hash((self.id, self.latitude, self.longitude))
+        return hash((self.identifier, self.latitude, self.longitude))
 
     def __eq__(self, other):
-        return (self.get_id() == other.get_id()) and \
+        return (self.get_identifier() == other.get_identifier()) and \
                (self.get_latitude() == other.get_latitude()) and \
                (self.get_longitude() == other.get_longitude())
 
     def __repr__(self):
-        return "{0} @ 0x{1}".format(str(self.id), str(hex(id(self))).upper())
+        return "{0} @ 0x{1}".format(str(self.identifier), str(hex(identifier(self))).upper())
 
     def __str__(self):
-        return str(self.id)
+        return str(self.identifier)
 
-    def get_id(self):
+    def get_identifier(self):
         """
         Gets the id for the vertex
         :return: id
         """
-        return self.id
+        return self.identifier
 
     def get_latitude(self):
         """
@@ -143,7 +143,7 @@ class Vertex:
 
 class Edge:
     """
-    the
+    Edge object for use in the Graph
     :field first_vertex: The first vertex of the edge, a vertex object
     :field second_vertex: The second vertex of the edge, a vertex object
     :field weight: the weight of the edge, an int/float
