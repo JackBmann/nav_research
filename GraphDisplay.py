@@ -1,15 +1,16 @@
 from kivy.app import App
+
+from kivy.uix.button import Button
 from kivy.uix.widget import Widget
-from Graph import Graph
+from kivy.uix.floatlayout import FloatLayout
+from kivy.lang import Builder
 
+from Graph import Vertex
 
-class GraphDisplayWidget(Widget):
-    pass
-
-
-class GraphDisplayApp(App):
-    def build(self):
-        return DisplayVertex()
+root = Builder.load_string("""
+Screen:
+    FloatLayout:
+""")
 
 
 class DisplayVertex(Widget):
@@ -28,10 +29,26 @@ class DisplayVertex(Widget):
         self.vertex_number = str(vertex.get_identifier())
 
 
-def graph_to_kv(Graph):
-    with open("GraphDisplay.kv", "wt") as out_kv:
-        out_kv.write("")
 
+class GraphDisplayApp(App):
+    """
+
+    """
+
+    vertices = []
+
+    def build(self):
+        f = FloatLayout()
+        for vertex in self.vertices:
+            v = Button(text = str(vertex.get_identifier()), font_size = 20, size_hint = (.1, .1))
+            v.pos = (vertex.get_longitude()*4, vertex.get_latitude()*4)
+            f.add_widget(v)
+        return f
+
+    def set_vertices(self, vertices):
+        self.vertices = vertices
 
 if __name__ == '__main__':
-    GraphDisplayApp().run()
+    newApp = GraphDisplayApp()
+    newApp.set_vertices([Vertex(1, 70, 70), Vertex(2, 50, 50)])
+    newApp.run()
