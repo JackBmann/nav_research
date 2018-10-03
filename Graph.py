@@ -87,29 +87,31 @@ class Vertex:
     """
     Vertex object for use in the graph
     :field id: the identifier value, an int
-    :field x: the first gps coordinate in the pair
-    :field y: the second gps coordinate in the pair
+    :field latitude: the first gps coordinate in the pair
+    :field longitude: the second gps coordinate in the pair
     """
     id = 0  # basic initialization for id, should not be left at 0
-    x = 0.0  # basic initialization for x, should not be left at 0.0
-    y = 0.0  # basic initialization for y, should not be left at 0.0
+    latitude = 0.0  # basic initialization for latitude, should not be left at 0.0
+    longitude = 0.0  # basic initialization for longitude, should not be left at 0.0
 
-    def __init__(self, id, x, y):
+    def __init__(self, id, latitude, longitude):
         """
         Constructor for a vertex
         :param id: the id for the vertex
-        :param x: the x coordinate for the vertex
-        :param y: the y coordinate for the vertex
+        :param latitude: the latitude coordinate for the vertex
+        :param longitude: the longitude coordinate for the vertex
         """
         self.id = id
-        self.x = x
-        self.y = y
+        self.latitude = latitude
+        self.longitude = longitude
 
     def __hash__(self):
-        return hash((self.id, self.x, self.y))
+        return hash((self.id, self.latitude, self.longitude))
 
     def __eq__(self, other):
-        return (self.id == other.id) and (self.x == other.x) and (self.y == other.y)
+        return (self.get_id() == other.get_id()) and \
+               (self.get_latitude() == other.get_latitude()) and \
+               (self.get_longitude() == other.get_longitude())
 
     def __repr__(self):
         return "{0} @ 0x{1}".format(str(self.id), str(hex(id(self))).upper())
@@ -117,26 +119,26 @@ class Vertex:
     def __str__(self):
         return str(self.id)
 
-    def getID(self):
+    def get_id(self):
         """
         Gets the id for the vertex
         :return: id
         """
         return self.id
 
-    def getX(self):
+    def get_latitude(self):
         """
-        Gets the x value for the vertex
-        :return: x
+        Gets the latitude value for the vertex
+        :return: latitude
         """
-        return self.x
+        return self.latitude
 
-    def getY(self):
+    def get_longitude(self):
         """
-        Gets the y value for the vertex
-        :return: y
+        Gets the longitude value for the vertex
+        :return: longitude
         """
-        return self.y
+        return self.longitude
 
 
 class Edge:

@@ -122,12 +122,12 @@ def a_star_heuristic(graph, src, dest):
     """
     Heuristic function for a*
     Currently just calculates the euclidean distance between src and dest to inform its decision
-    :param graph: The grpah for the function, not used
+    :param graph: The graph for the function, not used
     :param src: the source vertex (a vertex object)
     :param dest: the destination vertex (a vertex object)
     :return: distance, an number (float) value that represents the distance between src and dest
     """
-    distance = sqrt((src.x - dest.x)**2 + (src.y - dest.y)**2)
+    distance = sqrt((src.get_latitude() - dest.get_latitude())**2 + (src.get_longitude() - dest.get_longitude())**2)
     return distance + graph.edges[(src, dest)]
 
 
