@@ -94,13 +94,20 @@ class Graph:
             vertices = [] #ordered list of verticies
             vertices_flag = 0
             for line in input_file:
-                if line == "VERTICIES":
+                line = line.strip()
+
+                if line == '':
+                    continue
+
+                if line == "VERTICES":
                     edge_flag = 0
                     vertices_flag = 1
+                    continue
 
-                if line == "EDGE":
+                if line == "EDGES":
                     edge_flag = 1
                     vertices_flag = 0
+                    continue
 
                 if edge_flag == 1:
                     #  if we are in the edges block, read in the edges
@@ -114,7 +121,44 @@ class Graph:
 
             return Graph(edges)
 
+    def write_graph(self, file_name):
+        """
+        Writes a graph to a file, so that it can be retrieved later
+        :param file_name: the name of the file to be written out
+        :return: Null
+        """
+        with open(file_name, 'w+') as write_file:
+            output_string = "VERTICES" + '\n'
+            number_vertices = self.get_num_vertices()
+            for i in range(number_vertices):
+                current_vertex = self.vertices[i]
+                output_string += str(current_vertex.get_identifier())
+                output_string += ","
+                output_string += str(current_vertex.get_latitude())
+                output_string += ","
+                output_string += str(current_vertex.get_longitude())
+                output_string += '\n'
+            output_string += '\n'
+            output_string += '\n'
+            output_string += "EDGES"
+            output_string += '\n'
+            for pair in self.edges:
+                edge = self.edges[pair]
+                output_string += str(edge.first_vertex)
+                output_string += ','
+                output_string += str(edge.second_vertex)
+                output_string += ','
+                output_string += str(edge.weight)
+                output_string += '\n'
+            write_file.write(output_string)
 
+    def get_num_vertices(self):
+        """
+        Gets the number of vertices in the graph.
+        Since the vertices are ordered by ID, taking the max works for this
+        :return: an int, the number of vertices
+        """
+        return max(self.vertices.keys()) + 1
 
 class Vertex:
     """
