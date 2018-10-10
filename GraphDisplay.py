@@ -7,6 +7,7 @@ from kivy.lang import Builder
 
 from Graph import Vertex
 
+# setup for initial root node
 root = Builder.load_string("""
 Screen:
     FloatLayout:
@@ -29,15 +30,20 @@ class DisplayVertex(Widget):
         self.vertex_number = str(vertex.get_identifier())
 
 
-
 class GraphDisplayApp(App):
     """
-
+    The main app for displaying the graph
+    Contains a list of vertices, which must be set before the app is run
     """
 
-    vertices = []
+    vertices = []  # list of Vertex object from the graph file. Must be set before run() is called
 
     def build(self):
+        """
+        The main building function for the app
+        REQUIRES set_vertices to have been run first
+        :return: f, the overarching float layout which
+        """
         f = FloatLayout()
         for vertex in self.vertices:
             v = Button(text = str(vertex.get_identifier()), font_size = 20, size_hint = (.1, .1))
@@ -47,6 +53,7 @@ class GraphDisplayApp(App):
 
     def set_vertices(self, vertices):
         self.vertices = vertices
+
 
 if __name__ == '__main__':
     newApp = GraphDisplayApp()

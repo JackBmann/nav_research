@@ -18,7 +18,7 @@ def path_distance(graph, path):
     distance = 0
     current = len(path)-1
     while current != 0:
-        distance += graph.edges[(path[current], path[current-1])]
+        distance += graph.edges[(path[current], path[current-1])].weight
         current -= 1
     return distance
 
@@ -116,7 +116,7 @@ def djikstra_heuristic(graph, src, dest):
     :param dest: dest vertex
     :return: the edge weight between src and dest, a number (float)
     """
-    return graph.edges[(src, dest)]
+    return graph.edges[(src, dest)].weight
 
 
 def a_star_heuristic(graph, src, dest):
@@ -129,7 +129,7 @@ def a_star_heuristic(graph, src, dest):
     :return: distance, an number (float) value that represents the distance between src and dest
     """
     distance = sqrt((src.get_latitude() - dest.get_latitude())**2 + (src.get_longitude() - dest.get_longitude())**2)
-    return distance + graph.edges[(src, dest)]
+    return distance + graph.edges[(src, dest)].weight
 
 
 if __name__ == "__main__":

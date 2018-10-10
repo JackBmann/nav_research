@@ -12,7 +12,7 @@ class Graph:
     :field seen: a set of seen vertices
     """
     vertices = {}  # list of vertices contained by the graph
-    edges = {}  # dictionary of edges in the graph. Key is a tuple of (src,dest) and value is distance, an int
+    edges = {}  # dictionary of edges in the graph. Key is a tuple of (src,dest) and value is an edge object
     connections = {}  # dictionary of edges. Key is src, value is dest
     seen = set()
 
@@ -27,25 +27,25 @@ class Graph:
         connections = {}
         parsed_edges = {}
         for edge in edges:
-            first_vertex = edge[0]
-            second_vertex = edge[1]
+            first_vertex = edge.first_vertex
+            second_vertex = edge.second_vertex
 
-            if first_vertex.getID() not in vertices:
-                vertices[first_vertex.getID()] = first_vertex
+            if first_vertex.get_identifier() not in vertices:
+                vertices[first_vertex.get_identifier()] = first_vertex
             else:
-                first_vertex = vertices[first_vertex.getID()]
+                first_vertex = vertices[first_vertex.get_identifier()]
 
-            if second_vertex.getID() not in vertices:
-                vertices[second_vertex.getID()] = second_vertex
+            if second_vertex.get_identifier() not in vertices:
+                vertices[second_vertex.get_identifier()] = second_vertex
             else:
-                second_vertex = vertices[second_vertex.getID()]
+                second_vertex = vertices[second_vertex.get_identifier()]
 
             if first_vertex not in connections:
                 connections[first_vertex] = [second_vertex]
             else:
                 connections[first_vertex].append(second_vertex)
 
-            parsed_edges[(first_vertex, second_vertex)] = edges[edge]
+            parsed_edges[(first_vertex, second_vertex)] = edge
         self.edges = parsed_edges
         self.vertices = vertices
         self.connections = connections
@@ -75,12 +75,45 @@ class Graph:
         Finds the distance between two connected vertices
         :param src: the source vertex
         :param dest: the destination vertex
-        :return: int dist, which is non-zero unless src == dest or connected(src,dest) == False
+        :return: number dist, which is non-zero unless src == dest or connected(src,dest) == False
         """
         if not self.connected(src, dest):
             return 0
         else:
-            return self.edges[(src, dest)]
+            return self.edges[(src, dest)].weight
+
+    def read_graph(self, file_name):
+        """
+        Reads in a graph stored in a .txt file with the name fileName
+        :param file_name: the path to a .txt file
+        :return: a Graph object
+        """
+        with open(file_name, 'r') as input_file:
+            edges = []
+            edge_flag = 0
+            vertices = [] #ordered list of verticies
+            vertices_flag = 0
+            for line in input_file:
+                if line == "VERTICIES":
+                    edge_flag = 0
+                    vertices_flag = 1
+
+                if line == "EDGE":
+                    edge_flag = 1
+                    vertices_flag = 0
+
+                if edge_flag == 1:
+                    #  if we are in the edges block, read in the edges
+                    parsed_line = tuple(map(int, line.split(",")))
+                    edges.append(Edge(vertices[parsed_line[0]], vertices[parsed_line[1]], parsed_line[2]))
+
+                if vertices_flag == 1:
+                    #  if we are in the vertices block, read in the vertices
+                    parsed_line = tuple(map(int, line.split(",")))
+                    vertices.append(Vertex(parsed_line[0], parsed_line[1], parsed_line[2]))
+
+            return Graph(edges)
+
 
 
 class Vertex:
@@ -114,7 +147,7 @@ class Vertex:
                (self.get_longitude() == other.get_longitude())
 
     def __repr__(self):
-        return "{0} @ 0x{1}".format(str(self.identifier), str(hex(identifier(self))).upper())
+        return "{0} @ 0x{1}".format(str(self.identifier), str(hex(self.identifier)).upper())
 
     def __str__(self):
         return str(self.identifier)
@@ -152,7 +185,7 @@ class Edge:
     second_vertex = None
     weight = None
 
-    def __init___(self, first_vertex, second_vertex, weight):
+    def __init__(self, first_vertex, second_vertex, weight):
         """
         Constructor for the edge class
         :param first_vertex: The first vertex of the edge, a vertex object
