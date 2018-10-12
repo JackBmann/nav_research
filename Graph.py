@@ -82,7 +82,8 @@ class Graph:
         else:
             return self.edges[(src, dest)].weight
 
-    def read_graph(self, file_name):
+    @staticmethod
+    def read_graph(file_name):
         """
         Reads in a graph stored in a .txt file with the name fileName
         :param file_name: the path to a .txt file
@@ -91,7 +92,7 @@ class Graph:
         with open(file_name, 'r') as input_file:
             edges = []
             edge_flag = 0
-            vertices = [] #ordered list of verticies
+            vertices = []  # ordered list of vertices
             vertices_flag = 0
             for line in input_file:
                 line = line.strip()
@@ -159,6 +160,7 @@ class Graph:
         :return: an int, the number of vertices
         """
         return max(self.vertices.keys()) + 1
+
 
 class Vertex:
     """
@@ -240,4 +242,3 @@ class Edge:
         self.first_vertex = first_vertex
         self.second_vertex = second_vertex
         self.weight = weight
-

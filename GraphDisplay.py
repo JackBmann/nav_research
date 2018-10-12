@@ -1,61 +1,107 @@
-from kivy.app import App
-
-from kivy.uix.button import Button
-from kivy.uix.widget import Widget
-from kivy.uix.floatlayout import FloatLayout
-from kivy.lang import Builder
-
-from Graph import Vertex
-
-# setup for initial root node
-root = Builder.load_string("""
-Screen:
-    FloatLayout:
-""")
+import plotly
+import plotly.graph_objs as go
+import networkx as nx
+from sys import maxsize
 
 
-class DisplayVertex(Widget):
-    x_position = 25  # roughly corresponds to the longitude of a vertex, but can be adjusted for display purposes
-    y_position = 25  # roughly corresponds to the latitude of a vertex, but can be adjusted for display purposes
-    vertex_number = "1492"  # the id of the vertex
-
-    def parse_vertex(self, vertex):
-        """
-        A sort of constructor for a display vertex
-        :param vertex: the vertex to be parsed into a display vertex
-        :return: NULL
-        """
-        self.x_position = vertex.get_longitude()
-        self.y_position = vertex.get_latitude()
-        self.vertex_number = str(vertex.get_identifier())
-
-
-class GraphDisplayApp(App):
-    """
-    The main app for displaying the graph
-    Contains a list of vertices, which must be set before the app is run
-    """
-
-    vertices = []  # list of Vertex object from the graph file. Must be set before run() is called
-
-    def build(self):
-        """
-        The main building function for the app
-        REQUIRES set_vertices to have been run first
-        :return: f, the overarching float layout which
-        """
-        f = FloatLayout()
-        for vertex in self.vertices:
-            v = Button(text = str(vertex.get_identifier()), font_size = 20, size_hint = (.1, .1))
-            v.pos = (vertex.get_longitude()*4, vertex.get_latitude()*4)
-            f.add_widget(v)
-        return f
-
-    def set_vertices(self, vertices):
-        self.vertices = vertices
+def generate_graph(graph):
+    g = nx.Graph()
+    pos = {}
+    min_latitude = maxsize
+    min_longitude = maxsize
+    n = graph.get_num_vertices()
+    for vertex in graph.vertices:
+        vertex_object = graph.vertices[vertex]
+        if vertex_object.get_latitude() < min_latitude:
+            min_latitude = vertex_object.get_latitude()
+        if vertex_object.get_longitude() < min_longitude:
+            min_longitude = vertex_object.get_longitude()
+    for vertex in graph.vertices:
+        vertex_object = graph.vertices[vertex]
+        g.add_node(vertex_object.get_identifier())
+        pos[vertex_object.get_identifier()] = [(vertex_object.get_longitude() - min_longitude) / n,
+                                               (vertex_object.get_latitude() - min_latitude) / n]
+    for edge in graph.edges:
+        g.add_edge(edge[0].get_identifier(), edge[1].get_identifier())
+    nx.set_node_attributes(g, pos, 'pos')
+    return g
 
 
-if __name__ == '__main__':
-    newApp = GraphDisplayApp()
-    newApp.set_vertices([Vertex(1, 70, 70), Vertex(2, 50, 50)])
-    newApp.run()
+def draw_graph(graph):
+    g = generate_graph(graph)
+    pos = nx.get_node_attributes(g, 'pos')
+    dmin = 1
+    ncenter = 0
+    for n in pos:
+        x, y = pos[n]
+        d = (x - 0.5) ** 2 + (y - 0.5) ** 2
+        if d < dmin:
+            ncenter = n
+            dmin = d
+
+    p = nx.single_source_shortest_path_length(g, ncenter)
+
+    edge_trace = go.Scatter(
+        x=[],
+        y=[],
+        line=dict(width=0.5, color='#888'),
+        hoverinfo='none',
+        mode='lines')
+
+    for edge in g.edges():
+        x0, y0 = g.node[edge[0]]['pos']
+        x1, y1 = g.node[edge[1]]['pos']
+        edge_trace['x'] += tuple([x0, x1, None])
+        edge_trace['y'] += tuple([y0, y1, None])
+
+    node_trace = go.Scatter(
+        x=[],
+        y=[],
+        text=[],
+        mode='markers',
+        hoverinfo='text',
+        marker=dict(
+            showscale=True,
+            # colorscale options
+            # 'Greys' | 'YlGnBu' | 'Greens' | 'YlOrRd' | 'Bluered' | 'RdBu' |
+            # 'Reds' | 'Blues' | 'Picnic' | 'Rainbow' | 'Portland' | 'Jet' |
+            # 'Hot' | 'Blackbody' | 'Earth' | 'Electric' | 'Viridis' |
+            colorscale='YlGnBu',
+            reversescale=True,
+            color=[],
+            size=10,
+            colorbar=dict(
+                thickness=15,
+                title='Node Connections',
+                xanchor='left',
+                titleside='right'
+            ),
+            line=dict(width=2)))
+
+    for node in g.nodes():
+        x, y = g.node[node]['pos']
+        node_trace['x'] += tuple([x])
+        node_trace['y'] += tuple([y])
+
+    for node, adjacencies in enumerate(g.adjacency()):
+        node_trace['marker']['color'] += tuple([len(adjacencies[1])])
+        node_info = '# of connections: ' + str(len(adjacencies[1]))
+        node_trace['text'] += tuple([node_info])
+
+    fig = go.Figure(data=[edge_trace, node_trace],
+                    layout=go.Layout(
+                        title='<br>Network graph made with Python',
+                        titlefont=dict(size=16),
+                        showlegend=False,
+                        hovermode='closest',
+                        margin=dict(b=20, l=5, r=5, t=40),
+                        annotations=[dict(
+                            text="Created by Michael Bolot, Jack Baumann, and Dr. David Andrews using "
+                                 "<a href='https://plot.ly/python/network-graphs/'>plotly.networkx</a>.",
+                            showarrow=False,
+                            xref="paper", yref="paper",
+                            x=0.005, y=-0.002)],
+                        xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+                        yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)))
+
+    plotly.offline.plot(fig, filename='GraphDisplay.html')
