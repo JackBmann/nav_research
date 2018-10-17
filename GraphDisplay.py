@@ -90,7 +90,7 @@ def draw_graph(graph):
 
     fig = go.Figure(data=[edge_trace, node_trace],
                     layout=go.Layout(
-                        title='<br>Network graph made with Python',
+                        title='<br>Garph',
                         titlefont=dict(size=16),
                         showlegend=False,
                         hovermode='closest',
