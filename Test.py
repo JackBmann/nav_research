@@ -61,4 +61,4 @@ for entry in a_star_list[1:]:
 print("A*:                 ", a_star_str)
 
 # GraphDisplay.draw_graph(Garph)
-GraphDisplay.draw_graph(read_shp(r"C:\Users\wavej\Documents\Research\Campus.shp"))
+GraphDisplay.draw_graph(read_shp(r"shapefiles\Campus.shp"))
