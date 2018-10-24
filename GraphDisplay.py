@@ -28,20 +28,20 @@ def generate_graph(graph):
 
 
 def draw_graph(graph):
-    #g = generate_graph(graph)
+    # g = generate_graph(graph)
     g = graph
-    #print(g.edges)
+    # print(g.edges)
     pos = nx.get_node_attributes(g, 'pos')
     dmin = 1
-    ncenter = 0
+    # ncenter = 0
     for n in pos:
         x, y = pos[n]
         d = (x - 0.5) ** 2 + (y - 0.5) ** 2
         if d < dmin:
-            ncenter = n
+            # ncenter = n
             dmin = d
 
-    #p = nx.single_source_shortest_path_length(g, ncenter)
+    # p = nx.single_source_shortest_path_length(g, ncenter)
 
     edge_trace = go.Scatter(
         x=[],
@@ -51,8 +51,8 @@ def draw_graph(graph):
         mode='lines')
 
     for edge in g.edges():
-        #x0, y0 = g.node[edge[0]]['pos']
-        #x1, y1 = g.node[edge[1]]['pos']
+        # x0, y0 = g.node[edge[0]]['pos']
+        # x1, y1 = g.node[edge[1]]['pos']
         x0, y0 = edge[0]
         x1, y1 = edge[1]
         edge_trace['x'] += tuple([x0, x1, None])
@@ -83,7 +83,7 @@ def draw_graph(graph):
             line=dict(width=2)))
 
     for node in g.nodes():
-        #x, y = g.node[node]['pos']
+        # x, y = g.node[node]['pos']
         x, y = node
         node_trace['x'] += tuple([x])
         node_trace['y'] += tuple([y])
@@ -99,7 +99,7 @@ def draw_graph(graph):
                         titlefont=dict(size=16),
                         showlegend=False,
                         hovermode='closest',
-                        margin=dict(b=20, l=5, r=5, t=40),
+                        margin=dict(b=5, l=5, r=5, t=5),
                         annotations=[dict(
                             text="Created by Michael Bolot, Jack Baumann, and Dr. David Andrews using "
                                  "<a href='https://plot.ly/python/network-graphs/'>plotly.networkx</a>.",
