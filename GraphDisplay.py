@@ -28,7 +28,9 @@ def generate_graph(graph):
 
 
 def draw_graph(graph):
-    g = generate_graph(graph)
+    #g = generate_graph(graph)
+    g = graph
+    #print(g.edges)
     pos = nx.get_node_attributes(g, 'pos')
     dmin = 1
     ncenter = 0
@@ -39,7 +41,7 @@ def draw_graph(graph):
             ncenter = n
             dmin = d
 
-    p = nx.single_source_shortest_path_length(g, ncenter)
+    #p = nx.single_source_shortest_path_length(g, ncenter)
 
     edge_trace = go.Scatter(
         x=[],
@@ -49,8 +51,10 @@ def draw_graph(graph):
         mode='lines')
 
     for edge in g.edges():
-        x0, y0 = g.node[edge[0]]['pos']
-        x1, y1 = g.node[edge[1]]['pos']
+        #x0, y0 = g.node[edge[0]]['pos']
+        #x1, y1 = g.node[edge[1]]['pos']
+        x0, y0 = edge[0]
+        x1, y1 = edge[1]
         edge_trace['x'] += tuple([x0, x1, None])
         edge_trace['y'] += tuple([y0, y1, None])
 
@@ -79,7 +83,8 @@ def draw_graph(graph):
             line=dict(width=2)))
 
     for node in g.nodes():
-        x, y = g.node[node]['pos']
+        #x, y = g.node[node]['pos']
+        x, y = node
         node_trace['x'] += tuple([x])
         node_trace['y'] += tuple([y])
 
