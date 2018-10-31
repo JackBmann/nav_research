@@ -1,7 +1,7 @@
 from Graph import Graph, Vertex, Edge
 from SearchAlgorithms import dfs, dijkstra, djikstra_heuristic, a_star_heuristic
 import GraphDisplay
-from networkx import read_shp, DiGraph
+from networkx import read_shp
 
 one = Vertex(0, 0, 0)
 two = Vertex(1, 10, 2)
@@ -59,12 +59,15 @@ a_star_str = str(a_star_list[0])
 for entry in a_star_list[1:]:
     a_star_str += ", " + str(entry)
 print("A*:                 ", a_star_str)
+print()
 
 # GraphDisplay.draw_graph(Garph)
 K = read_shp(r"shapefiles\Campus.shp")
+
 L = Graph.networkx_convert(K)
 for edge in K.edges(data=True):
     print(edge)
+
 print(K.edges(data=True))
 print(L.edges)
 GraphDisplay.draw_graph(K)
