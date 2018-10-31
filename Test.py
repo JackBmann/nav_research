@@ -2,6 +2,7 @@ from Graph import Graph, Vertex, Edge
 from SearchAlgorithms import dfs, dijkstra, djikstra_heuristic, a_star_heuristic
 import GraphDisplay
 from networkx import read_shp
+from datetime import datetime
 
 one = Vertex(0, 0, 0)
 two = Vertex(1, 10, 2)
@@ -37,28 +38,37 @@ print("Edges:             ", NewGraph.edges)
 print()
 NewGraph.write_graph("Test.txt")
 
+start = datetime.now()
 dfs_list = dfs(Garph, Garph.get_vertex(0), Garph.get_vertex(8))
+end = datetime.now()
+delta = end - start
 dfs_list = dfs_list[::-1]
 dfs_str = str(dfs_list[0])
 for entry in dfs_list[1:]:
     dfs_str += ", " + str(entry)
-print("Depth First Search: ", dfs_str)
+print("Depth First Search (" + str(delta.seconds) + ":" + str(delta.microseconds) + " seconds): " + dfs_str)
 
 Garph.seen = set()
+start = datetime.now()
 dijkstra_list = dijkstra(Garph, Garph.get_vertex(0), Garph.get_vertex(8), djikstra_heuristic)
+end = datetime.now()
+delta = end - start
 dijkstra_list = dijkstra_list[::-1]
 dijkstra_str = str(dijkstra_list[0])
 for entry in dijkstra_list[1:]:
     dijkstra_str += ", " + str(entry)
-print("Dijkstra:           ", dijkstra_str)
+print("Dijkstra (" + str(delta.seconds) + ":" + str(delta.microseconds) + " seconds):           ", dijkstra_str)
 
 Garph.seen = set()
+start = datetime.now()
 a_star_list = dijkstra(Garph, Garph.get_vertex(0), Garph.get_vertex(8), a_star_heuristic)
+end = datetime.now()
+delta = end - start
 a_star_list = a_star_list[::-1]
 a_star_str = str(a_star_list[0])
 for entry in a_star_list[1:]:
     a_star_str += ", " + str(entry)
-print("A*:                 ", a_star_str)
+print("A* (" + str(delta.seconds) + ":" + str(delta.microseconds) + " seconds):                 ", a_star_str)
 print()
 
 # GraphDisplay.draw_graph(Garph)
