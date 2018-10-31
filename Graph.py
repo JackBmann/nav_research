@@ -89,12 +89,14 @@ class Graph:
         """
         newGraph = networkx.DiGraph()
         for vertex in self.vertices:
-            newGraph.add_node((vertex.get_latitude(), vertex.get_longitude()))
+            vertex_obj = self.vertices[vertex]
+            newGraph.add_node((vertex_obj.get_latitude(), vertex_obj.get_longitude()))
         for edge in self.edges:
-            first_vertex = (edge.first_vertex.get_latitude(), edge.first_vertex.get_longitude())
-            second_vertex = (edge.second_vertex.get_latitude(), edge.second_vertex.get_longitude())
-            attr = {"weight": edge.weight}
-            newGraph.add_edge(first_vertex, second_vertex, attr)
+            edge_obj = self.edges[edge]
+            first_vertex = (edge_obj.first_vertex.get_latitude(), edge_obj.first_vertex.get_longitude())
+            second_vertex = (edge_obj.second_vertex.get_latitude(), edge_obj.second_vertex.get_longitude())
+            newGraph.add_edge(first_vertex, second_vertex)
+            newGraph[first_vertex][second_vertex]['weight'] = edge_obj.weight
         return newGraph
 
     @staticmethod
@@ -108,8 +110,8 @@ class Graph:
         vertices = {}  # hash of positional vertex tuples to vertex objects
         edges = []
         for edge in graph.edges(data='SHAPE_LENG'):
-            start_long = edge[0][0]
-            start_lat = edge[0][1]
+            start_lat = edge[0][0]
+            start_long = edge[0][1]
             pos_vert = (start_long, start_lat)
             start_vert = ""
             if pos_vert in vertices:

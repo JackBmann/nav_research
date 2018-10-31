@@ -80,4 +80,6 @@ for edge in K.edges(data=True):
 
 print(K.edges(data=True))
 print(L.edges)
+T = L.convert_networkx()
+print(T.edges(data=True))
 GraphDisplay.draw_graph(K)
