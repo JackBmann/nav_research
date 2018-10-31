@@ -1,7 +1,7 @@
 """
 Created By Michael Bolot and John (Jack) Baumann for 2018 research
 """
-
+import networkx
 
 class Graph:
     """
@@ -81,6 +81,58 @@ class Graph:
             return 0
         else:
             return self.edges[(src, dest)].weight
+
+    def convert_networkx(self):
+        """
+        Converts a graph into a networkx graph
+        :return: A networkx graph object
+        """
+        newGraph = networkx.DiGraph()
+        for vertex in self.vertices:
+            newGraph.add_node((vertex.get_latitude(), vertex.get_longitude()))
+        for edge in self.edges:
+            first_vertex = (edge.first_vertex.get_latitude(), edge.first_vertex.get_longitude())
+            second_vertex = (edge.second_vertex.get_latitude(), edge.second_vertex.get_longitude())
+            attr = {"weight": edge.weight}
+            newGraph.add_edge(first_vertex, second_vertex, attr)
+        return newGraph
+
+    @staticmethod
+    def networkx_convert(graph):
+        """
+        Converts a networkx digraph into a Graph Object
+        :param graph: The NetworkX Digraph to be parsed
+        :return: a Graph obejct
+        """
+        identifier = 0
+        vertices = {}  # hash of positional vertex tuples to vertex objects
+        edges = []
+        for edge in graph.edges(data='SHAPE_LENG'):
+            start_long = edge[0][0]
+            start_lat = edge[0][1]
+            pos_vert = (start_long, start_lat)
+            start_vert = ""
+            if pos_vert in vertices:
+                start_vert = vertices[pos_vert]
+            else:
+                start_vert = Vertex(identifier, start_lat, start_long)
+                vertices[pos_vert] = start_vert
+                identifier += 1
+
+            end_long = edge[1][0]
+            end_lat = edge[1][1]
+            pos_vert = (end_long, end_lat)
+            end_vert = ""
+            if pos_vert in vertices:
+                end_vert = vertices[pos_vert]
+            else:
+                end_vert = Vertex(identifier, end_lat, end_long)
+                vertices[pos_vert] = end_vert
+                identifier += 1
+            current_edge = Edge(start_vert, end_vert, edge[2])
+            edges.append(current_edge)
+        parsed_graph = Graph(edges)
+        return parsed_graph
 
     @staticmethod
     def read_graph(file_name):

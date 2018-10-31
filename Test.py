@@ -62,7 +62,9 @@ print("A*:                 ", a_star_str)
 
 # GraphDisplay.draw_graph(Garph)
 K = read_shp(r"shapefiles\Campus.shp")
-L = DiGraph()
+L = Graph.networkx_convert(K)
+for edge in K.edges(data=True):
+    print(edge)
 print(K.edges(data=True))
-
+print(L.edges)
 GraphDisplay.draw_graph(K)
