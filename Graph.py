@@ -121,8 +121,8 @@ class Graph:
                 vertices[pos_vert] = start_vert
                 identifier += 1
 
-            end_long = edge[1][0]
-            end_lat = edge[1][1]
+            end_lat = edge[1][0]
+            end_long = edge[1][1]
             pos_vert = (end_long, end_lat)
             end_vert = ""
             if pos_vert in vertices:

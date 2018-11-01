@@ -89,8 +89,14 @@ def draw_graph(graph):
         node_trace['y'] += tuple([y])
 
     for node, adjacencies in enumerate(g.adjacency()):
+        node_info = "Node "
+        node_info += str(adjacencies[0])
+        node_info += ": connected to "
+        for item in adjacencies[1]:
+            node_info += str(item)
+            node_info += " , "
         node_trace['marker']['color'] += tuple([len(adjacencies[1])])
-        node_info = '# of connections: ' + str(len(adjacencies[1]))
+        #  node_info = '# of connections: ' + str(len(adjacencies[1]))
         node_trace['text'] += tuple([node_info])
 
     fig = go.Figure(data=[edge_trace, node_trace],
