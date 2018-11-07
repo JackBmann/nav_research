@@ -88,12 +88,36 @@ def draw_graph(graph):
         node_trace['x'] += tuple([x])
         node_trace['y'] += tuple([y])
 
+    node_hash = {}
+    max_node = 0
+    done = set()
     for node, adjacencies in enumerate(g.adjacency()):
         node_info = "Node "
-        node_info += str(adjacencies[0])
+        n = adjacencies[0]
+        identifier = ""
+        if n in node_hash:
+            identifier = node_hash[n]
+        else:
+            node_hash[n] = max_node
+            identifier = max_node
+            max_node += 1
+
+        if identifier in done:
+            print("NEW NODE, SAME GPS", identifier)
+        else:
+            done.add(identifier)
+
+        node_info += str(identifier)
         node_info += ": connected to "
         for item in adjacencies[1]:
-            node_info += str(item)
+            node_number = ""
+            if item in node_hash:
+                node_number = node_hash[item]
+            else:
+                node_hash[item] = max_node
+                node_number = max_node
+                max_node += 1
+            node_info += str(node_number)
             node_info += " , "
         node_trace['marker']['color'] += tuple([len(adjacencies[1])])
         #  node_info = '# of connections: ' + str(len(adjacencies[1]))
