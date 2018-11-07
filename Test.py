@@ -72,7 +72,7 @@ print("A* (" + str(delta.seconds) + ":" + str(delta.microseconds) + " seconds): 
 print()
 
 # GraphDisplay.draw_graph(Garph)
-K = read_shp(r"shapefiles\Campus.shp")
+K = read_shp(r"shapefiles\OSMCampus.shp")
 
 L = Graph.networkx_convert(K)
 for edge in K.edges(data=True):

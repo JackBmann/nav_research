@@ -1,0 +1,97 @@
+osm_id,name,highway,waterway,aerialway,barrier,man_made,z_order,other_tags
+366371748,,service,,,,,0,"""service""=>""driveway"""
+329545839,,secondary_link,,,,,6,"""oneway""=>""yes"""
+366371747,,service,,,,,0,"""service""=>""driveway"""
+10012728,East John W Carpenter Freeway,secondary,,,,,6,"""oneway""=>""yes"",""tiger:cfcc""=>""A64"",""tiger:county""=>""Dallas, TX"",""tiger:name_base""=>""John W Carpenter"",""tiger:name_direction_prefix""=>""E"",""tiger:name_type""=>""Fwy"",""tiger:reviewed""=>""no"""
+366371746,,service,,,,,0,"""service""=>""driveway"""
+386197956,,service,,,,,0,
+9945030,,secondary_link,,,,,6,"""oneway""=>""yes"",""tiger:cfcc""=>""A63"",""tiger:county""=>""Dallas, TX"""
+386197955,,service,,,,,0,
+558803068,Tom Braniff Drive,secondary,,,,,6,"""oneway""=>""yes"",""tiger:cfcc""=>""A41"",""tiger:county""=>""Dallas, TX"",""tiger:name_base""=>""Tom Braniff"",""tiger:name_type""=>""Dr"",""tiger:reviewed""=>""no"",""tiger:zip_left""=>""75039"",""tiger:zip_right""=>""75039"""
+10011386,Soledad Drive,service,,,,,0,"""tiger:cfcc""=>""A41"",""tiger:county""=>""Dallas, TX"",""tiger:name_base""=>""Soledad"",""tiger:name_type""=>""Dr"",""tiger:reviewed""=>""no"",""tiger:zip_left""=>""75062"",""tiger:zip_right""=>""75062"""
+558803065,Tom Braniff Drive,secondary,,,,,6,"""oneway""=>""yes"",""tiger:cfcc""=>""A41"",""tiger:county""=>""Dallas, TX"",""tiger:name_base""=>""Tom Braniff"",""tiger:name_type""=>""Dr"",""tiger:reviewed""=>""no"""
+25727434,Tom Braniff Drive,secondary,,,,,26,"""bridge""=>""yes"",""layer""=>""1"",""oneway""=>""yes"",""tiger:cfcc""=>""A41"",""tiger:county""=>""Dallas, TX"",""tiger:name_base""=>""Tom Braniff"",""tiger:name_type""=>""Dr"",""tiger:separated""=>""no"",""tiger:source""=>""tiger_import_dch_v0.6_20070829"",""tiger:tlid""=>""103268802:103235346:103234785:103234789:103234790:103234791"""
+9996977,Blakeley Lane,service,,,,,0,"""tiger:cfcc""=>""A41"",""tiger:county""=>""Dallas, TX"",""tiger:name_base""=>""Blakeley"",""tiger:reviewed""=>""no"""
+558803063,Chemsearch Boulevard,tertiary,,,,,4,"""oneway""=>""yes"",""tiger:cfcc""=>""A41"",""tiger:county""=>""Dallas, TX"",""tiger:name_base""=>""Chemsearch"",""tiger:name_type""=>""Blvd"",""tiger:reviewed""=>""no"",""tiger:zip_left""=>""75062"",""tiger:zip_right""=>""75062"""
+446930393,DART,,,,,,5,"""electrified""=>""contact_line"",""oneway""=>""yes"",""railway""=>""light_rail"""
+446930392,DART,,,,,,5,"""electrified""=>""contact_line"",""oneway""=>""yes"",""railway""=>""light_rail"""
+25727432,Tom Braniff Drive,secondary,,,,,26,"""bridge""=>""yes"",""layer""=>""1"",""oneway""=>""yes"",""tiger:cfcc""=>""A41"",""tiger:county""=>""Dallas, TX"",""tiger:name_base""=>""Tom Braniff"",""tiger:name_type""=>""Dr"",""tiger:reviewed""=>""no"",""tiger:separated""=>""no"",""tiger:source""=>""tiger_import_dch_v0.6_20070829"",""tiger:tlid""=>""102893520:103201580:103201581:103005248:103203252"",""tiger:zip_left""=>""75039"",""tiger:zip_right""=>""75039"""
+558803060,Chemsearch Boulevard,tertiary,,,,,4,"""oneway""=>""yes"",""tiger:cfcc""=>""A41"",""tiger:county""=>""Dallas, TX"",""tiger:name_base""=>""Chemsearch"",""tiger:name_type""=>""Blvd"",""tiger:reviewed""=>""no"",""tiger:zip_left""=>""75062"",""tiger:zip_right""=>""75062"""
+562552479,,service,,,,,0,
+544831170,TEXpress Lane,construction,,,,,0,"""construction""=>""motorway"",""oneway""=>""yes"",""toll""=>""yes"""
+610359328,,service,,,,,0,
+359630557,Haggar Circle,residential,,,,,3,
+10005060,East John Carpenter Freeway,secondary,,,,,6,"""oneway""=>""yes"",""tiger:cfcc""=>""A64"",""tiger:county""=>""Dallas, TX"",""tiger:name_base""=>""John Carpenter"",""tiger:name_direction_prefix""=>""E"",""tiger:name_type""=>""Fwy"",""tiger:reviewed""=>""no"""
+9957320,Crusader Drive,service,,,,,0,"""tiger:cfcc""=>""A41"",""tiger:county""=>""Dallas, TX"",""tiger:name_base""=>""Crusade"",""tiger:reviewed""=>""no"",""tiger:zip_left""=>""75062"",""tiger:zip_right""=>""75062"""
+329545841,,secondary_link,,,,,26,"""bridge""=>""yes"",""layer""=>""1"",""oneway""=>""yes"""
+25728199,East John W Carpenter Freeway,motorway,,,,,9,"""lanes""=>""2"",""maxspeed""=>""60 mph"",""oneway""=>""yes"",""ref""=>""TX 114"",""tiger:cfcc""=>""A35"",""tiger:county""=>""Dallas, TX"",""tiger:name_base""=>""John W Carpenter"",""tiger:name_base_1""=>""State Highway 183"",""tiger:name_base_2""=>""State Highway 114"",""tiger:name_direction_prefix""=>""E"",""tiger:name_type""=>""Fwy"""
+329545685,,secondary_link,,,,,6,"""oneway""=>""yes"""
+329545840,,secondary_link,,,,,6,"""oneway""=>""yes"""
+9961378,Maher Lane,residential,,,,,3,"""tiger:cfcc""=>""A41"",""tiger:county""=>""Dallas, TX"",""tiger:name_base""=>""Maher"",""tiger:reviewed""=>""no"""
+9977006,Tom Braniff Drive,secondary,,,,,6,"""oneway""=>""yes"",""tiger:cfcc""=>""A41"",""tiger:county""=>""Dallas, TX"",""tiger:name_base""=>""Tom Braniff"",""tiger:name_type""=>""Dr"",""tiger:reviewed""=>""no"",""tiger:separated""=>""no"",""tiger:source""=>""tiger_import_dch_v0.6_20070829"",""tiger:tlid""=>""102893520:103201580:103201581:103005248:103203252"",""tiger:zip_left""=>""75039"",""tiger:zip_right""=>""75039"""
+329545682,,secondary_link,,,,,26,"""bridge""=>""yes"",""layer""=>""1"",""oneway""=>""yes"""
+9968868,Vince Hagen Drive,service,,,,,0,"""tiger:cfcc""=>""A41"",""tiger:county""=>""Dallas, TX"",""tiger:name_base""=>""Vince Hagen"",""tiger:name_type""=>""Dr"",""tiger:reviewed""=>""no"""
+488378399,,footway,,,,,0,
+488378398,,steps,,,,,0,
+488378397,,footway,,,,,0,
+610359327,,service,,,,,0,
+488378396,,footway,,,,,0,
+386198279,,secondary_link,,,,,6,
+610359326,,service,,,,,0,
+386198278,,secondary_link,,,,,6,
+610359325,,service,,,,,0,"""service""=>""parking_aisle"""
+386198277,,service,,,,,0,
+544831166,TEXpress Lane,construction,,,,,0,"""construction""=>""motorway"",""maxspeed:advisory""=>""15 mph"",""oneway""=>""yes"",""toll""=>""yes"""
+386198273,,service,,,,,0,
+9970663,,service,,,,,0,"""junction""=>""roundabout"",""tiger:cfcc""=>""A41"",""tiger:county""=>""Dallas, TX"",""tiger:name_base""=>""Haggerty"""
+612860923,,service,,,,,0,
+9970661,Haggerty Lane,service,,,,,0,"""tiger:cfcc""=>""A41"",""tiger:county""=>""Dallas, TX"",""tiger:name_base""=>""Haggerty"",""tiger:reviewed""=>""no"""
+386198430,,service,,,,,0,
+154423402,,secondary_link,,,,,6,"""oneway""=>""yes"""
+386198429,,service,,,,,0,
+9983517,Dominican Lane,service,,,,,0,"""tiger:cfcc""=>""A41"",""tiger:county""=>""Dallas, TX"",""tiger:name_base""=>""Dominican"",""tiger:name_type""=>""Ln"",""tiger:reviewed""=>""no"""
+444604791,East Northgate Drive,secondary,,,,,6,"""bicycle""=>""yes"",""cycleway""=>""no"",""oneway""=>""yes"",""tiger:cfcc""=>""A41"",""tiger:county""=>""Dallas, TX"",""tiger:name_base""=>""Northgate"",""tiger:name_direction_prefix""=>""E"",""tiger:name_type""=>""Dr"",""tiger:reviewed""=>""no"""
+9995178,Constantine Avenue,service,,,,,0,"""tiger:cfcc""=>""A41"",""tiger:county""=>""Dallas, TX"",""tiger:name_base""=>""Constantine"",""tiger:reviewed""=>""no"""
+615672613,,,,,,,0,"""power""=>""line"""
+444604789,East Northgate Drive,secondary,,,,,6,"""bicycle""=>""yes"",""cycleway""=>""no"",""oneway""=>""yes"",""tiger:cfcc""=>""A41"",""tiger:county""=>""Dallas, TX"",""tiger:name_base""=>""Northgate"",""tiger:name_direction_prefix""=>""E"",""tiger:name_type""=>""Dr"",""tiger:reviewed""=>""no"""
+444604788,East Northgate Drive,secondary,,,,,6,"""bicycle""=>""yes"",""cycleway""=>""no"",""oneway""=>""yes"",""tiger:cfcc""=>""A41"",""tiger:county""=>""Dallas, TX"",""tiger:name_base""=>""Northgate"",""tiger:name_direction_prefix""=>""E"",""tiger:name_type""=>""Dr"",""tiger:reviewed""=>""no"""
+562552514,,footway,,,,,0,
+562552513,,footway,,,,,0,
+562552512,,footway,,,,,0,
+25727391,East John W Carpenter Freeway,motorway,,,,,9,"""lanes""=>""2"",""oneway""=>""yes"",""ref""=>""TX 114"",""tiger:cfcc""=>""A35"",""tiger:county""=>""Dallas, TX"",""tiger:name_base""=>""Johnson W Carpenter"",""tiger:name_base_1""=>""State Highway 114"",""tiger:name_direction_prefix""=>""W"",""tiger:name_type""=>""Fwy"""
+492260885,,service,,,,,0,
+492260884,,service,,,,,0,
+601180325,Tom Braniff Drive,secondary,,,,,6,"""oneway""=>""yes"",""tiger:cfcc""=>""A41"",""tiger:county""=>""Dallas, TX"",""tiger:name_base""=>""Tom Braniff"",""tiger:name_type""=>""Dr"",""tiger:reviewed""=>""no"",""tiger:zip_left""=>""75039"",""tiger:zip_right""=>""75039"""
+545081982,,construction,,,,,0,"""construction""=>""residential"""
+601180324,East John Carpenter Freeway,secondary,,,,,6,"""oneway""=>""yes"",""tiger:cfcc""=>""A64"",""tiger:county""=>""Dallas, TX"",""tiger:name_base""=>""John Carpenter"",""tiger:name_direction_prefix""=>""E"",""tiger:name_type""=>""Fwy"",""tiger:reviewed""=>""no"""
+601180323,East John W Carpenter Freeway,secondary,,,,,6,"""oneway""=>""yes"",""tiger:cfcc""=>""A64"",""tiger:county""=>""Dallas, TX"",""tiger:name_base""=>""John W Carpenter"",""tiger:name_direction_prefix""=>""E"",""tiger:name_type""=>""Fwy"",""tiger:reviewed""=>""no"""
+9996354,Gorman Drive,service,,,,,0,"""tiger:cfcc""=>""A41"",""tiger:county""=>""Dallas, TX"",""tiger:name_base""=>""Gorman"",""tiger:name_type""=>""Dr"",""tiger:reviewed""=>""no"",""tiger:zip_left""=>""75062"",""tiger:zip_right""=>""75062"""
+9948611,,motorway_link,,,,,9,"""destination:ref""=>""Loop 12 North"",""destination:street""=>""Tom Braniff Drive"",""oneway""=>""yes"",""tiger:cfcc""=>""A63"",""tiger:county""=>""Dallas, TX"""
+444604968,Tom Braniff Drive,secondary,,,,,6,"""oneway""=>""yes"",""tiger:cfcc""=>""A41"",""tiger:county""=>""Dallas, TX"",""tiger:name_base""=>""Tom Braniff"",""tiger:name_type""=>""Dr"",""tiger:reviewed""=>""no"",""tiger:zip_left""=>""75039"",""tiger:zip_right""=>""75039"""
+154428066,,motorway_link,,,,,9,"""destination:ref""=>""Loop 12 South"",""oneway""=>""yes"""
+562552490,,service,,,,,0,
+444604967,Tom Braniff Drive,secondary,,,,,6,"""oneway""=>""yes"",""tiger:cfcc""=>""A41"",""tiger:county""=>""Dallas, TX"",""tiger:name_base""=>""Tom Braniff"",""tiger:name_type""=>""Dr"",""tiger:reviewed""=>""no"""
+562552489,,service,,,,,0,
+9970257,,service,,,,,0,
+193245494,,motorway_link,,,,,9,"""oneway""=>""yes"""
+97506618,Tom Braniff Drive,tertiary,,,,,4,"""oneway""=>""yes"",""tiger:cfcc""=>""A41"",""tiger:county""=>""Dallas, TX"",""tiger:name_base""=>""Tom Braniff"",""tiger:name_type""=>""Dr"",""tiger:reviewed""=>""no"",""tiger:zip_left""=>""75039"",""tiger:zip_right""=>""75039"""
+97506617,Tom Braniff Drive,secondary,,,,,6,"""oneway""=>""yes"",""tiger:cfcc""=>""A41"",""tiger:county""=>""Dallas, TX"",""tiger:name_base""=>""Tom Braniff"",""tiger:name_type""=>""Dr"",""tiger:reviewed""=>""no"",""tiger:separated""=>""no"",""tiger:source""=>""tiger_import_dch_v0.6_20070829"",""tiger:tlid""=>""103268802:103235346:103234785:103234789:103234790:103234791"""
+97506616,Tom Braniff Drive,tertiary,,,,,4,"""oneway""=>""yes"",""tiger:cfcc""=>""A41"",""tiger:county""=>""Dallas, TX"",""tiger:name_base""=>""Tom Braniff"",""tiger:name_type""=>""Dr"",""tiger:reviewed""=>""no"""
+562552480,,service,,,,,0,
+562552511,,footway,,,,,0,
+562552510,,footway,,,,,0,
+562552509,,footway,,,,,0,
+558824569,,secondary_link,,,,,6,"""oneway""=>""yes"""
+562552508,,footway,,,,,0,
+10000273,Lynch Circle,service,,,,,0,"""oneway""=>""yes"",""tiger:cfcc""=>""A41"",""tiger:county""=>""Dallas, TX"",""tiger:name_base""=>""Science"",""tiger:name_type""=>""Dr"",""tiger:reviewed""=>""no"",""tiger:zip_left""=>""75062"""
+558824568,,secondary_link,,,,,6,"""oneway""=>""yes"""
+558824567,,secondary_link,,,,,6,"""oneway""=>""yes"""
+558824566,,secondary_link,,,,,6,"""oneway""=>""yes"""
+562552505,,service,,,,,0,
+558824565,,secondary_link,,,,,6,"""oneway""=>""yes"""
+562552504,,service,,,,,0,
+562552503,,service,,,,,0,
+558824563,,secondary_link,,,,,6,"""oneway""=>""yes"""
+558824562,,secondary_link,,,,,6,"""oneway""=>""yes"",""tiger:cfcc""=>""A41"",""tiger:county""=>""Dallas, TX"",""tiger:name_base""=>""Gorman"",""tiger:name_type""=>""Dr"",""tiger:reviewed""=>""no"",""tiger:zip_left""=>""75062"",""tiger:zip_right""=>""75062"""
+366371750,Lynch Circle,service,,,,,0,"""oneway""=>""yes"",""tiger:cfcc""=>""A41"",""tiger:county""=>""Dallas, TX"",""tiger:name_base""=>""Science"",""tiger:name_type""=>""Dr"",""tiger:reviewed""=>""no"",""tiger:zip_left""=>""75062"""
+366371749,,service,,,,,0,"""junction""=>""roundabout"""
