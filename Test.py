@@ -2,6 +2,7 @@ from Graph import Graph, Vertex, Edge
 from SearchAlgorithms import dfs, dijkstra, djikstra_heuristic, a_star_heuristic
 import GraphDisplay
 from networkx import read_shp
+from OSMParser import parse_osm
 from datetime import datetime
 
 one = Vertex(0, 0, 0)
@@ -71,15 +72,8 @@ for entry in a_star_list[1:]:
 print("A* (" + str(delta.seconds) + ":" + str(delta.microseconds) + " seconds):                 ", a_star_str)
 print()
 
-# GraphDisplay.draw_graph(Garph)
-K = read_shp(r"shapefiles\OSMCampus.shp")
-
-L = Graph.networkx_convert(K)
-for edge in K.edges(data=True):
-    print(edge)
-
-print(K.edges(data=True))
-print(L.edges)
-T = L.convert_networkx()
-print(T.edges(data=True))
-GraphDisplay.draw_graph(K)
+# K = read_shp(r"shapefiles\OSMCampus.shp", False)
+K = parse_osm('shapefiles/OSMCampus.osm')
+L = K.convert_networkx()
+print(L.edges(data=True))
+GraphDisplay.draw_graph(L)
