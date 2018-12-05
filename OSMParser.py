@@ -25,6 +25,7 @@ def haversine(vertex1, vertex2):
 def parse_osm(path):
     vertices = {}
     edges = []
+    ways = {}
 
     root = elementTree.parse(path).getroot()
     for child in root:
@@ -57,22 +58,54 @@ def parse_osm(path):
                     continue
 
             prev_vertex = None
+            first_vertex = None
             for node in nds:
                 vertex = vertices[node.attrib['ref']]
                 if prev_vertex:
                     edges.append(Edge(prev_vertex, vertex, abs(haversine(prev_vertex, vertex))))
+                else:
+                    first_vertex = vertex
                 prev_vertex = vertex
+            ways[child.attrib['id']] = (first_vertex, prev_vertex)  # captures the first and last vertex of every way
 
             # Iterate through the tags of each node to parse its associated metadata
             # for tag in tags:
             #     print(tag.tag, tag.attrib)
+        elif child.tag == "relation":
+            valid = False
+            tags = child.findall('tag')
+            members = child.findall('member')
 
-        # elif child.tag == "relation":
-        #     print(child.tag, child.attrib)
-        #     for grandchild in child:
-        #         if grandchild.tag == "nd":
-        #             print(grandchild.tag, grandchild.attrib)
-        #         elif grandchild.tag == "tag":
-        #             print(grandchild.tag, grandchild.attrib)
+            for tag in tags:
+                if tag.attrib['k'] not in ['route']:
+                    continue
+                else:
+                    if tag.attrib['v'] not in ['road']:
+                        break
+                    else:
+                        valid = True
+                        break
+            if valid:
+                prev_vertex = None
+                for member in members:
+                    mem_type = member.attrib['type']
+                    mem_id = member.attrib['ref']
+                    if prev_vertex:
+                        if mem_type in ['way']:
+                            way = ways[mem_id]
+                            new_edge = Edge(prev_vertex, way[0], abs(haversine(prev_vertex, way[0])))
+                            edges.append(new_edge)
+                            prev_vertex = way[1]
+
+                        elif mem_type in ['node']:
+                            vertex = vertices[mem_id]
+                            new_edge = Edge(prev_vertex, vertex, abs(haversine(prev_vertex, vertex)))
+                            edges.append(new_edge)
+                            prev_vertex = vertex
+                    else:
+                        if mem_type in ['way']:
+                            prev_vertex = ways[mem_id][1]
+                        elif mem_type in ['node']:
+                            prev_vertex = vertices[mem_id]
 
     return Graph(edges)

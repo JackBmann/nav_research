@@ -87,6 +87,7 @@ def draw_graph(graph):
         x, y = node
         node_trace['x'] += tuple([x])
         node_trace['y'] += tuple([y])
+    print(node_trace)
 
     node_hash = {}
     max_node = 0
