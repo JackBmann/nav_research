@@ -5,11 +5,11 @@ from math import radians, sin, cos, asin, sqrt
 
 def haversine(vertex1, vertex2):
     """
-    Calculates the distance in kilometers between the GPS coordinates of the given vertices using the Haversine formula.
-    Our code is based off of information and code found here: https://rosettacode.org/wiki/Haversine_formula#Python
-    :param vertex1: the first vertex
-    :param vertex2: the second vertex
-    :return: the distance in kilometers between the two given vertexes
+      Calculates the distance in kilometers between the GPS coordinates of the given vertices using the Haversine formula.
+      Our code is based off of information and code found here: https://rosettacode.org/wiki/Haversine_formula#Python
+      :param vertex1: the first vertex
+      :param vertex2: the second vertex
+      :return: the distance in kilometers between the two given vertexes
     """
     earth_radius = 6372.8  # Earth radius in kilometers
     lat1 = radians(vertex1.get_latitude())
@@ -22,6 +22,21 @@ def haversine(vertex1, vertex2):
     return earth_radius * c
 
 
+def valid_feature(tags):
+    """
+      Determines if the feature represented by the given tags is valid, i.e. a road
+      :param tags: a list of tags from an OSM feature
+      :return: true if the feature is valid, false otherwise
+    """
+    if len(tags) == 0:
+        return True
+    for tag in tags:
+        if (tag.attrib["k"] == "highway" and tag.attrib["v"] not in ["footpath"]) or \
+           (tag.attrib["k"] == "route" and tag.attrib["v"] != "road"):
+            return True
+    return False
+
+
 def parse_osm(path):
     vertices = {}
     edges = []
@@ -29,13 +44,16 @@ def parse_osm(path):
 
     root = elementTree.parse(path).getroot()
     for child in root:
+
+        # A boolean flag to filter out non-road nodes/ways/relations
+        valid = False
+
         if child.tag == "node":
             # A list of all of the metadata of this node that is used to filter out unwanted nodes and store metadata
             tags = child.findall('tag')
 
-            for tag in tags:
-                if tag.attrib["k"] in ["railway", "bicycle"]:
-                    continue
+            if not valid_feature(tags):
+                continue
 
             attribs = child.attrib
             vert = Vertex(int(attribs['id']), float(attribs['lat']), float(attribs['lon']))
@@ -51,61 +69,75 @@ def parse_osm(path):
             # A list of all of the metadata of this way that is used to filter out unwanted ways and store metadata
             tags = child.findall('tag')
 
-            for tag in tags:
-                if tag.attrib["k"] in ["railway"]:
-                    continue
-                if tag.attrib["k"] in ["cycleway"] and tag.attrib["v"] == "yes":
-                    continue
+            if not valid_feature(tags):
+                continue
 
             prev_vertex = None
             first_vertex = None
             for node in nds:
+                ''' 
+                  There can be nodes that were filtered out already still in these ways, so if they are not in the
+                  vertices dictionary, we'll need to skip them. 
+                  For example if a road and a railway intersect, the point at which they intersect could still be
+                  in a way representing a road, even though it's a railway node.
+                '''
+                if node.attrib['ref'] not in vertices:
+                    continue
+
                 vertex = vertices[node.attrib['ref']]
                 if prev_vertex:
                     edges.append(Edge(prev_vertex, vertex, abs(haversine(prev_vertex, vertex))))
                 else:
                     first_vertex = vertex
                 prev_vertex = vertex
-            ways[child.attrib['id']] = (first_vertex, prev_vertex)  # captures the first and last vertex of every way
+            ways[child.attrib['id']] = (first_vertex, prev_vertex)  # store the first and last vertex of the way
 
-            # Iterate through the tags of each node to parse its associated metadata
+            # Iterate through the tags of each way to parse its associated metadata
             # for tag in tags:
             #     print(tag.tag, tag.attrib)
+
         elif child.tag == "relation":
-            valid = False
-            tags = child.findall('tag')
+            # A list of ids of members (either ways or nodes) in this relation
             members = child.findall('member')
+            # A list of all of the metadata of this relation that is used to filter out unwanted ways and store metadata
+            tags = child.findall('tag')
 
-            for tag in tags:
-                if tag.attrib['k'] not in ['route']:
+            if not valid_feature(tags):
+                continue
+
+            prev_vertex = None
+            for member in members:
+                mem_type = member.attrib['type']
+                mem_id = member.attrib['ref']
+                ''' 
+                  There can be nodes that were filtered out already still in these ways, so if they are not in the
+                  vertices dictionary, we'll need to skip them. 
+                  For example if a road and a railway intersect, the point at which they intersect could still be
+                  in a way representing a road, even though it's a railway node.
+                '''
+                if mem_id not in vertices and mem_id not in ways:
                     continue
-                else:
-                    if tag.attrib['v'] not in ['road']:
-                        break
-                    else:
-                        valid = True
-                        break
-            if valid:
-                prev_vertex = None
-                for member in members:
-                    mem_type = member.attrib['type']
-                    mem_id = member.attrib['ref']
-                    if prev_vertex:
-                        if mem_type in ['way']:
-                            way = ways[mem_id]
-                            new_edge = Edge(prev_vertex, way[0], abs(haversine(prev_vertex, way[0])))
-                            edges.append(new_edge)
-                            prev_vertex = way[1]
 
-                        elif mem_type in ['node']:
-                            vertex = vertices[mem_id]
-                            new_edge = Edge(prev_vertex, vertex, abs(haversine(prev_vertex, vertex)))
-                            edges.append(new_edge)
-                            prev_vertex = vertex
-                    else:
-                        if mem_type in ['way']:
-                            prev_vertex = ways[mem_id][1]
-                        elif mem_type in ['node']:
-                            prev_vertex = vertices[mem_id]
+                if prev_vertex:
+                    if mem_type in ['way']:
+                        way = ways[mem_id]
+                        new_edge = Edge(prev_vertex, way[0], abs(haversine(prev_vertex, way[0])))
+                        edges.append(new_edge)
+                        prev_vertex = way[1]
+
+                    elif mem_type in ['node']:
+                        vertex = vertices[mem_id]
+                        new_edge = Edge(prev_vertex, vertex, abs(haversine(prev_vertex, vertex)))
+                        edges.append(new_edge)
+                        prev_vertex = vertex
+                else:
+                    if mem_type in ['way']:
+                        prev_vertex = ways[mem_id][1]
+                    elif mem_type in ['node']:
+                        prev_vertex = vertices[mem_id]
+
+            # Iterate through the tags of each relation to parse its associated metadata
+            # for tag in tags:
+            #     print(tag.tag, tag.attrib)
 
     return Graph(edges)
