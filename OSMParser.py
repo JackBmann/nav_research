@@ -30,8 +30,10 @@ def valid_feature(tags):
     """
     if len(tags) == 0:
         return True
+    invalid_roads = ["footpath", "pedestrian", "track", "bus_guideway", "raceway", "bridleway", "steps", "path",\
+                     "proposed"]
     for tag in tags:
-        if (tag.attrib["k"] == "highway" and tag.attrib["v"] not in ["footpath"]) or \
+        if (tag.attrib["k"] == "highway" and tag.attrib["v"] not in invalid_roads) or \
            (tag.attrib["k"] == "route" and tag.attrib["v"] != "road"):
             return True
     return False
