@@ -1,3 +1,6 @@
+# Generates and displays a networkx graph to GraphDisplay.html
+# Based off of code found here: https://plot.ly/python/network-graphs/
+
 import plotly
 import plotly.graph_objs as go
 import networkx as nx
