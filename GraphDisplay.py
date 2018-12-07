@@ -87,7 +87,6 @@ def draw_graph(graph):
         x, y = node
         node_trace['x'] += tuple([x])
         node_trace['y'] += tuple([y])
-    print(node_trace)
 
     node_hash = {}
     max_node = 0
@@ -107,7 +106,8 @@ def draw_graph(graph):
             print("NEW NODE, SAME GPS", identifier)
         else:
             done.add(identifier)
-
+        if identifier == 4515:
+            print(g.nodes['pos'])
         node_info += str(identifier)
         node_info += ": connected to "
         for item in adjacencies[1]:
