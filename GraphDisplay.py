@@ -30,6 +30,18 @@ def generate_graph(graph):
     return g
 
 
+def get_color(key):
+    """
+    gets the color for a node based on its integer value representation
+    :param key: an integer value
+    :return: (r,g,b), where r,g,b are ints between 0 and 256
+    """
+    r = (key & 0xFF0000) >> 16
+    g = (key & 0x00FF00) >> 8
+    b = (key & 0x0000FF)
+    return r, g, b
+
+
 def draw_graph(graph):
     # g = generate_graph(graph)
     g = graph
@@ -73,13 +85,13 @@ def draw_graph(graph):
             # 'Greys' | 'YlGnBu' | 'Greens' | 'YlOrRd' | 'Bluered' | 'RdBu' |
             # 'Reds' | 'Blues' | 'Picnic' | 'Rainbow' | 'Portland' | 'Jet' |
             # 'Hot' | 'Blackbody' | 'Earth' | 'Electric' | 'Viridis' |
-            colorscale='YlGnBu',
+            colorscale= 'Jet',
             reversescale=True,
             color=[],
             size=10,
             colorbar=dict(
                 thickness=15,
-                title='Node Connections',
+                title='Discover Time',
                 xanchor='left',
                 titleside='right'
             ),
@@ -123,7 +135,9 @@ def draw_graph(graph):
                 max_node += 1
             node_info += str(node_number)
             node_info += " , "
-        node_trace['marker']['color'] += tuple([len(adjacencies[1])])
+        #change color stuff
+        print(g.nodes[n]['color'])
+        node_trace['marker']['color'] = g.nodes[n]['color']
         #  node_info = '# of connections: ' + str(len(adjacencies[1]))
         node_trace['text'] += tuple([node_info])
 

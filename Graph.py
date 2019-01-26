@@ -15,6 +15,8 @@ class Graph:
     edges = {}  # dictionary of edges in the graph. Key is a tuple of (src,dest) and value is an edge object
     connections = {}  # dictionary of edges. Key is src, value is dest
     seen = set()
+    colors = {}
+    current_color = 0
 
     def __init__(self, edges):
         """
@@ -82,6 +84,17 @@ class Graph:
         else:
             return self.edges[(src, dest)].weight
 
+    def add_seen(self, vertex):
+        self.seen.add(vertex)
+        self.color_node(vertex)
+
+    def color_node(self, vertex):
+        self.colors[vertex] = self.current_color
+        self.current_color += 1
+
+    def clear_colors(self):
+        self.colors = {}
+
     def convert_networkx(self):
         """
         Converts a graph into a networkx graph
@@ -90,13 +103,19 @@ class Graph:
         newGraph = networkx.DiGraph()
         for vertex in self.vertices:
             vertex_obj = self.vertices[vertex]
-            newGraph.add_node((vertex_obj.get_latitude(), vertex_obj.get_longitude()))
+            node_color = 0
+            if vertex_obj in self.colors:
+                node_color = self.colors[vertex_obj]
+            else:
+                node_color = 0
+            newGraph.add_node((vertex_obj.get_latitude(), vertex_obj.get_longitude()), color=node_color)
         for edge in self.edges:
             edge_obj = self.edges[edge]
             first_vertex = (edge_obj.first_vertex.get_latitude(), edge_obj.first_vertex.get_longitude())
             second_vertex = (edge_obj.second_vertex.get_latitude(), edge_obj.second_vertex.get_longitude())
             newGraph.add_edge(first_vertex, second_vertex)
             newGraph[first_vertex][second_vertex]['weight'] = edge_obj.weight
+
         return newGraph
 
     @staticmethod

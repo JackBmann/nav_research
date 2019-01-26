@@ -22,7 +22,6 @@ def path_distance(graph, path):
         current -= 1
     return distance
 
-
 def reconstruct_path(parents, src, dest):
     """
     Helper function to reconstruct the path from dest to source
@@ -50,7 +49,7 @@ def dfs(graph, src, dest):
     """
     best_path = []
     best_path_length = maxsize
-    graph.seen.add(src)
+    graph.add_seen(src)
     if src not in graph.connections:
         return []
     for connection in graph.connections[src]:
@@ -62,7 +61,7 @@ def dfs(graph, src, dest):
         else:
             if connection in graph.seen:
                 continue
-            graph.seen.add(connection)
+            graph.add_seen(connection)
             path = dfs(graph, connection, dest)
             if not path:
                 continue
@@ -93,7 +92,6 @@ def dijkstra(graph, src, dest, heuristic):
             continue
         distance[added_vertex] = maxsize
         parents[added_vertex] = None
-        q.put((maxsize, vertex))
 
     while not q.empty():
         current_vertex = graph.vertices[q.get()[1]]
@@ -101,11 +99,14 @@ def dijkstra(graph, src, dest, heuristic):
             return reconstruct_path(parents, src, dest)
         if current_vertex not in graph.connections:
             continue
+        if current_vertex not in graph.seen:
+            graph.add_seen(current_vertex)
         for connection in graph.connections[current_vertex]:
             best_move = distance[current_vertex] + heuristic(graph, current_vertex, connection)
             if best_move < distance[connection]:
                 distance[connection] = best_move
                 parents[connection] = current_vertex
+                q.put((best_move, connection.get_identifier()))
 
 
 def djikstra_heuristic(graph, src, dest):
