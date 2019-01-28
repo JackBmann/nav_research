@@ -61,17 +61,21 @@ def draw_graph(graph):
     edge_trace = go.Scatter(
         x=[],
         y=[],
-        line=dict(width=0.5, color='#888'),
+        line=dict(width=2, color='black'),
         hoverinfo='none',
         mode='lines')
 
-    for edge in g.edges():
+    for edge in g.edges(data=True):
         # x0, y0 = g.node[edge[0]]['pos']
         # x1, y1 = g.node[edge[1]]['pos']
         x0, y0 = edge[0]
         x1, y1 = edge[1]
         edge_trace['x'] += tuple([x0, x1, None])
         edge_trace['y'] += tuple([y0, y1, None])
+        color = 'black'
+        if edge[2].get('color') == 0:
+            color = 'red'
+        edge_trace['line']['color'] = color
 
     node_trace = go.Scatter(
         x=[],
@@ -81,11 +85,11 @@ def draw_graph(graph):
         hoverinfo='text',
         marker=dict(
             showscale=True,
-            # colorscale options
+            # Color scale options
             # 'Greys' | 'YlGnBu' | 'Greens' | 'YlOrRd' | 'Bluered' | 'RdBu' |
             # 'Reds' | 'Blues' | 'Picnic' | 'Rainbow' | 'Portland' | 'Jet' |
             # 'Hot' | 'Blackbody' | 'Earth' | 'Electric' | 'Viridis'
-            colorscale= 'Jet',
+            colorscale='Jet',
             reversescale=True,
             color=[],
             size=10,

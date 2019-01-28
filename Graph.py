@@ -3,6 +3,7 @@ Created By Michael Bolot and John (Jack) Baumann for 2018 research
 """
 import networkx
 
+
 class Graph:
     """
     Graph Class
@@ -107,12 +108,14 @@ class Graph:
             current_edge = (current_edge[1], path[i])
             self.edge_colors[current_edge] = self.optimal_color
 
-    def clear_seen(self):
+    def clear_colors(self):
         """
         clears the seen hash_table which marks nodes
         :return: void
         """
         self.seen = {}
+        self.edge_colors = {}
+        self.node_colors = {}
 
     def convert_networkx(self):
         """
@@ -133,7 +136,7 @@ class Graph:
             first_vertex = (edge_obj.first_vertex.get_latitude(), edge_obj.first_vertex.get_longitude())
             second_vertex = (edge_obj.second_vertex.get_latitude(), edge_obj.second_vertex.get_longitude())
             edge_color = 1
-            if (first_vertex, second_vertex) in edge_color or (second_vertex, first_vertex) in edge_color:
+            if (first_vertex, second_vertex) in self.edge_colors or (second_vertex, first_vertex) in self.edge_colors:
                 edge_color = 0
             newGraph.add_edge(first_vertex, second_vertex, weight=edge_obj.weight, color=edge_color)
             newGraph[first_vertex][second_vertex]['weight'] = edge_obj.weight

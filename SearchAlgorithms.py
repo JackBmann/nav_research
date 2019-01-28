@@ -22,6 +22,7 @@ def path_distance(graph, path):
         current -= 1
     return distance
 
+
 def reconstruct_path(parents, src, dest):
     """
     Helper function to reconstruct the path from dest to source
