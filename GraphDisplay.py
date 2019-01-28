@@ -125,8 +125,6 @@ def draw_graph(graph):
             print("NEW NODE, SAME GPS", identifier)
         else:
             done.add(identifier)
-        if identifier == 4515:
-            print(g.nodes['pos'])
         node_info += str(identifier)
         node_info += ": connected to "
         for item in adjacencies[1]:
@@ -140,7 +138,6 @@ def draw_graph(graph):
             node_info += str(node_number)
             node_info += " , "
         # change color stuff
-        print(g.nodes[n]['color'])
         node_trace['marker']['color'] += tuple([g.nodes[n]['color']])
         #  node_info = '# of connections: ' + str(len(adjacencies[1]))
         node_trace['text'] += tuple([node_info])
