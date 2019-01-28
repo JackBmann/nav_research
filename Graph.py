@@ -10,7 +10,7 @@ class Graph:
     :field vertices: A list of vertices contained by the graph (uses vertex objects)
     :field edges: A dictionary of the edges. Key is a tuple of (src, dest) and value is distance, an int
     :field connections: a dictionary of edges. Key is source, value is destination
-    :field seen: a set of seen vertices
+    :field seen: a table of seen vertices
     """
     vertices = {}  # list of vertices contained by the graph
     edges = {}  # dictionary of edges in the graph. Key is a tuple of (src,dest) and value is an edge object

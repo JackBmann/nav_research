@@ -55,7 +55,6 @@ print(L.edges(data=True))
 GraphDisplay.draw_graph(L)
 
 Garph.clear_colors()
-Garph.seen = set()
 start = datetime.now()
 dijkstra_list = dijkstra(Garph, Garph.get_vertex(0), Garph.get_vertex(8), djikstra_heuristic)
 end = datetime.now()
