@@ -14,9 +14,11 @@ class Graph:
     vertices = {}  # list of vertices contained by the graph
     edges = {}  # dictionary of edges in the graph. Key is a tuple of (src,dest) and value is an edge object
     connections = {}  # dictionary of edges. Key is src, value is dest
-    seen = set()
-    colors = {}
-    current_color = 0
+    seen = {}
+    node_colors = {}
+    edge_colors = {}
+    current_node = 0
+    optimal_color = 0  # 0 means the edge is on an optimal path, one means it is not
 
     def __init__(self, edges):
         """
@@ -86,15 +88,31 @@ class Graph:
 
     def add_seen(self, vertex):
         if vertex not in self.seen:
-            self.seen.add(vertex)
-            self.color_node(vertex)
+            self.seen[vertex] = self.current_node
+            self.current_node += 1
 
-    def color_node(self, vertex):
-        self.colors[vertex] = self.current_color
-        self.current_color += 1
+    def color_graph(self, path):
+        """
+        Colors a graph's edges and vertices
+        :param path: the optimal path to be highlighted in the display
+        :return: void, all changes will be made to structures in the graph object
+        """
+        self.node_colors = self.seen  # seen already contains information that can be used to color the nodes
+        if len(path) < 2:
+            # if the path doesn't have at least 2 nodes, it is maleformed
+            return
+        current_edge = (path[0], path[1])
+        self.edge_colors[current_edge] = self.optimal_color
+        for i in range(2, len(path)):
+            current_edge = (current_edge[1], path[i])
+            self.edge_colors[current_edge] = self.optimal_color
 
-    def clear_colors(self):
-        self.colors = {}
+    def clear_seen(self):
+        """
+        clears the seen hash_table which marks nodes
+        :return: void
+        """
+        self.seen = {}
 
     def convert_networkx(self):
         """
@@ -105,8 +123,8 @@ class Graph:
         for vertex in self.vertices:
             vertex_obj = self.vertices[vertex]
             node_color = 0
-            if vertex_obj in self.colors:
-                node_color = self.colors[vertex_obj]
+            if vertex_obj in self.node_colors:
+                node_color = self.node_colors[vertex_obj]
             else:
                 node_color = 0
             newGraph.add_node((vertex_obj.get_latitude(), vertex_obj.get_longitude()), color=node_color)
@@ -114,7 +132,10 @@ class Graph:
             edge_obj = self.edges[edge]
             first_vertex = (edge_obj.first_vertex.get_latitude(), edge_obj.first_vertex.get_longitude())
             second_vertex = (edge_obj.second_vertex.get_latitude(), edge_obj.second_vertex.get_longitude())
-            newGraph.add_edge(first_vertex, second_vertex)
+            edge_color = 1
+            if (first_vertex, second_vertex) in edge_color or (second_vertex, first_vertex) in edge_color:
+                edge_color = 0
+            newGraph.add_edge(first_vertex, second_vertex, weight=edge_obj.weight, color=edge_color)
             newGraph[first_vertex][second_vertex]['weight'] = edge_obj.weight
 
         return newGraph
