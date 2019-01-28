@@ -128,7 +128,7 @@ def a_star_heuristic(graph, src, dest):
     :param graph: The graph for the function, not used
     :param src: the source vertex (a vertex object)
     :param dest: the destination vertex (a vertex object)
-    :return: distance, an number (float) value that represents the distance between src and dest
+    :return: distance, a number (float) value that represents the distance between src and dest
     """
     distance = sqrt((src.get_latitude() - dest.get_latitude())**2 + (src.get_longitude() - dest.get_longitude())**2)
     return distance + graph.edges[(src, dest)].weight

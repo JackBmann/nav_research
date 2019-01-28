@@ -84,7 +84,7 @@ def draw_graph(graph):
             # colorscale options
             # 'Greys' | 'YlGnBu' | 'Greens' | 'YlOrRd' | 'Bluered' | 'RdBu' |
             # 'Reds' | 'Blues' | 'Picnic' | 'Rainbow' | 'Portland' | 'Jet' |
-            # 'Hot' | 'Blackbody' | 'Earth' | 'Electric' | 'Viridis' |
+            # 'Hot' | 'Blackbody' | 'Earth' | 'Electric' | 'Viridis'
             colorscale= 'Jet',
             reversescale=True,
             color=[],
@@ -135,7 +135,7 @@ def draw_graph(graph):
                 max_node += 1
             node_info += str(node_number)
             node_info += " , "
-        #change color stuff
+        # change color stuff
         print(g.nodes[n]['color'])
         node_trace['marker']['color'] += tuple([g.nodes[n]['color']])
         #  node_info = '# of connections: ' + str(len(adjacencies[1]))
