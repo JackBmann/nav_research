@@ -48,6 +48,7 @@ dfs_str = str(dfs_list[0])
 for entry in dfs_list[1:]:
     dfs_str += ", " + str(entry)
 print("Depth First Search (" + str(delta.seconds) + ":" + str(delta.microseconds) + " seconds): " + dfs_str)
+print(dfs_list)
 Garph.color_graph(dfs_list)
 L = Garph.convert_networkx()
 print(L.edges(data=True))

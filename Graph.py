@@ -136,7 +136,8 @@ class Graph:
             first_vertex = (edge_obj.first_vertex.get_latitude(), edge_obj.first_vertex.get_longitude())
             second_vertex = (edge_obj.second_vertex.get_latitude(), edge_obj.second_vertex.get_longitude())
             edge_color = 1
-            if (first_vertex, second_vertex) in self.edge_colors or (second_vertex, first_vertex) in self.edge_colors:
+            if (edge_obj.first_vertex, edge_obj.second_vertex) in self.edge_colors or \
+                    (edge_obj.second_vertex, edge_obj.first_vertex) in self.edge_colors:
                 edge_color = 0
             newGraph.add_edge(first_vertex, second_vertex, weight=edge_obj.weight, color=edge_color)
             newGraph[first_vertex][second_vertex]['weight'] = edge_obj.weight
