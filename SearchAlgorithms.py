@@ -55,6 +55,7 @@ def dfs(graph, src, dest):
     for connection in graph.connections[src]:
         path = []
         if connection == dest:
+            graph.add_seen(connection)
             path.append(connection)
             path.append(src)
             return path

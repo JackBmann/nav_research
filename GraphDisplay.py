@@ -137,7 +137,7 @@ def draw_graph(graph):
             node_info += " , "
         #change color stuff
         print(g.nodes[n]['color'])
-        node_trace['marker']['color'] = g.nodes[n]['color']
+        node_trace['marker']['color'] += tuple([g.nodes[n]['color']])
         #  node_info = '# of connections: ' + str(len(adjacencies[1]))
         node_trace['text'] += tuple([node_info])
 

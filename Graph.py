@@ -85,8 +85,9 @@ class Graph:
             return self.edges[(src, dest)].weight
 
     def add_seen(self, vertex):
-        self.seen.add(vertex)
-        self.color_node(vertex)
+        if vertex not in self.seen:
+            self.seen.add(vertex)
+            self.color_node(vertex)
 
     def color_node(self, vertex):
         self.colors[vertex] = self.current_color
