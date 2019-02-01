@@ -74,7 +74,6 @@ def draw_graph(graph):
             text=weight,
             hoverinfo='text',
             line=dict(width=5, color=color)))
-
     node_trace = go.Scatter(
         x=[],
         y=[],
