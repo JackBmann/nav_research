@@ -58,24 +58,22 @@ def draw_graph(graph):
 
     # p = nx.single_source_shortest_path_length(g, ncenter)
 
-    edge_trace = go.Scatter(
-        x=[],
-        y=[],
-        line=dict(width=2, color='black'),
-        hoverinfo='none',
-        mode='lines')
+    edge_trace = []
 
     for edge in g.edges(data=True):
-        # x0, y0 = g.node[edge[0]]['pos']
-        # x1, y1 = g.node[edge[1]]['pos']
         x0, y0 = edge[0]
         x1, y1 = edge[1]
-        edge_trace['x'] += tuple([x0, x1, None])
-        edge_trace['y'] += tuple([y0, y1, None])
         color = 'black'
         if edge[2].get('color') == 0:
             color = 'red'
-        edge_trace['line']['color'] = color
+        weight = "Edge Weight" + str(edge[2].get('weight'))
+        edge_trace.append(go.Scatter(
+            x=[x0, x1],
+            y=[y0, y1],
+            mode='lines',
+            text=weight,
+            hoverinfo='text',
+            line=dict(width=5, color=color)))
 
     node_trace = go.Scatter(
         x=[],
@@ -92,7 +90,7 @@ def draw_graph(graph):
             colorscale='Jet',
             reversescale=True,
             color=[],
-            size=10,
+            size=20,
             colorbar=dict(
                 thickness=15,
                 title='Discover Time',
@@ -142,12 +140,15 @@ def draw_graph(graph):
         #  node_info = '# of connections: ' + str(len(adjacencies[1]))
         node_trace['text'] += tuple([node_info])
 
-    fig = go.Figure(data=[edge_trace, node_trace],
+    trace = edge_trace
+    trace.append(node_trace)
+    fig = go.Figure(data=trace,
                     layout=go.Layout(
                         title='<br>Garph',
                         titlefont=dict(size=16),
                         showlegend=False,
                         hovermode='closest',
+                        hoverdistance=50,
                         margin=dict(b=5, l=5, r=5, t=5),
                         annotations=[dict(
                             text="Created by Michael Bolot, Jack Baumann, and Dr. David Andrews using "
