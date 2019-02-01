@@ -42,7 +42,7 @@ def get_color(key):
     return r, g, b
 
 
-def draw_graph(graph):
+def draw_graph(graph, title):
     # g = generate_graph(graph)
     g = graph
     # print(g.edges)
@@ -143,7 +143,7 @@ def draw_graph(graph):
     trace.append(node_trace)
     fig = go.Figure(data=trace,
                     layout=go.Layout(
-                        title='<br>Garph',
+                        title="<br>"+title,
                         titlefont=dict(size=16),
                         showlegend=False,
                         hovermode='closest',
