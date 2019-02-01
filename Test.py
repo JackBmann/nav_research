@@ -65,7 +65,7 @@ for entry in dijkstra_list[1:]:
     dijkstra_str += ", " + str(entry)
 print("Dijkstra (" + str(delta.seconds) + ":" + str(delta.microseconds) + " seconds):           ", dijkstra_str)
 
-Garph.seen = set()
+Garph.clear_colors()
 start = datetime.now()
 a_star_list = dijkstra(Garph, Garph.get_vertex(0), Garph.get_vertex(8), a_star_heuristic)
 end = datetime.now()
