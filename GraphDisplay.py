@@ -1,4 +1,4 @@
-# Generates and displays a networkx graph to GraphDisplay.html
+# Generates and displays a networkx graph to an html file
 # Based off of code found here: https://plot.ly/python/network-graphs/
 
 import plotly
@@ -42,7 +42,7 @@ def get_color(key):
     return r, g, b
 
 
-def draw_graph(graph, title):
+def draw_graph(graph, title, filename):
     # g = generate_graph(graph)
     g = graph
     # print(g.edges)
@@ -66,7 +66,7 @@ def draw_graph(graph, title):
         color = 'black'
         if edge[2].get('color') == 0:
             color = 'red'
-        weight = "Edge Weight" + str(edge[2].get('weight'))
+        weight = "Edge Weight: " + str(edge[2].get('weight'))
         edge_trace.append(go.Scatter(
             x=[x0, x1],
             y=[y0, y1],
@@ -133,7 +133,8 @@ def draw_graph(graph, title):
                 node_number = max_node
                 max_node += 1
             node_info += str(node_number)
-            node_info += " , "
+            node_info += ", "
+        node_info = node_info[:-2]
         # change color stuff
         node_trace['marker']['color'] += tuple([g.nodes[n]['color']])
         #  node_info = '# of connections: ' + str(len(adjacencies[1]))
@@ -158,4 +159,4 @@ def draw_graph(graph, title):
                         xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
                         yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)))
 
-    plotly.offline.plot(fig, filename='GraphDisplay.html')
+    plotly.offline.plot(fig, filename=filename+'.html')
