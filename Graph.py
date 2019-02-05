@@ -124,15 +124,13 @@ class Graph:
         Converts a graph into a networkx graph
         :return: A networkx graph object
         """
-        newGraph = networkx.DiGraph()
+        new_graph = networkx.DiGraph()
         for vertex in self.vertices:
             vertex_obj = self.vertices[vertex]
             node_color = 0
             if vertex_obj in self.node_colors:
                 node_color = self.node_colors[vertex_obj]
-            else:
-                node_color = 0
-            newGraph.add_node((vertex_obj.get_latitude(), vertex_obj.get_longitude()), color=node_color)
+            new_graph.add_node((vertex_obj.get_latitude(), vertex_obj.get_longitude()), color=node_color)
         for edge in self.edges:
             edge_obj = self.edges[edge]
             first_vertex = (edge_obj.first_vertex.get_latitude(), edge_obj.first_vertex.get_longitude())
@@ -141,10 +139,10 @@ class Graph:
             if (edge_obj.first_vertex, edge_obj.second_vertex) in self.edge_colors or \
                     (edge_obj.second_vertex, edge_obj.first_vertex) in self.edge_colors:
                 edge_color = 0
-            newGraph.add_edge(first_vertex, second_vertex, weight=edge_obj.weight, color=edge_color)
-            newGraph[first_vertex][second_vertex]['weight'] = edge_obj.weight
+            new_graph.add_edge(first_vertex, second_vertex, weight=edge_obj.weight, color=edge_color)
+            new_graph[first_vertex][second_vertex]['weight'] = edge_obj.weight
 
-        return newGraph
+        return new_graph
 
     @staticmethod
     def networkx_convert(graph):
@@ -160,10 +158,8 @@ class Graph:
             start_lat = edge[0][0]
             start_long = edge[0][1]
             pos_vert = (start_long, start_lat)
-            start_vert = ""
-            if pos_vert in vertices:
-                start_vert = vertices[pos_vert]
-            else:
+            start_vert = vertices[pos_vert]
+            if pos_vert not in vertices:
                 start_vert = Vertex(identifier, start_lat, start_long)
                 vertices[pos_vert] = start_vert
                 identifier += 1
@@ -171,10 +167,8 @@ class Graph:
             end_lat = edge[1][0]
             end_long = edge[1][1]
             pos_vert = (end_long, end_lat)
-            end_vert = ""
-            if pos_vert in vertices:
-                end_vert = vertices[pos_vert]
-            else:
+            end_vert = vertices[pos_vert]
+            if pos_vert not in vertices:
                 end_vert = Vertex(identifier, end_lat, end_long)
                 vertices[pos_vert] = end_vert
                 identifier += 1
