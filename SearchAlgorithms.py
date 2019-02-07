@@ -62,14 +62,15 @@ def dfs(graph, src, dest):
             return path
         else:
             if connection in graph.seen:
+                print(src, connection)
                 continue
-            graph.add_seen(connection)
+            #graph.add_seen(connection)
             path = dfs(graph, connection, dest)
             if not path:
                 continue
+            path.append(src)
             p_dist = path_distance(graph, path)
-            if p_dist < best_path_length:
-                path.append(src)
+            if p_dist <= best_path_length:
                 best_path = path
                 best_path_length = p_dist
     return best_path
