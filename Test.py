@@ -118,6 +118,36 @@ def test_box_roads():
     test_graph_algorithm(graph, dijkstra, graph.get_vertex(1), graph.get_vertex(), a_star_heuristic,
                          "Box Roads A*", "box_roads")
 
+def fix_box_roads():
+    with open("BoxRoads.txt", 'r') as openFile:
+        with open("ModBoxRoads.txt", 'w') as writeFile:
+            vert_flag = 0
+            edge_flag = 0
+            for line in openFile:
+                if line == '\n':
+                    writeFile.write(line)
+                    continue
+                line = line.strip()
+                if line == "VERTICES":
+                    writeFile.write(line + '\n')
+                    vert_flag = 1
+                    continue
+                if line == "EDGES":
+                    writeFile.write(line + '\n')
+                    vert_flag = 0
+                    edge_flag = 1
+                    continue
+                if vert_flag > 0:
+                    parsed = line.split(',')
+                    p_line = str(int(parsed[0]) - 1) + ',' + parsed[1] + ',' + parsed[2] + '\n'
+                    writeFile.write(p_line)
+
+                if edge_flag > 0:
+                    parsed = line.split(',')
+                    p_line = str(int(parsed[0]) - 1) + ',' + str(int(parsed[1]) - 1) + ',' + parsed[2] + '\n'
+                    writeFile.write(p_line)
+
+
 
 # test_dfs()
 # test_dijkstra()
@@ -126,4 +156,5 @@ def test_box_roads():
 # test_osm_dfs()
 # test_osm_dijkstra()
 # test_osm_a_star()
-test_box_roads()
+#test_box_roads()
+fix_box_roads()
