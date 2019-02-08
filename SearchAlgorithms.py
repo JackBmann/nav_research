@@ -42,7 +42,7 @@ def reconstruct_path(parents, src, dest):
 
 def dfs(graph, src, dest):
     """
-    Searches for a path from src to dest, using a naive breadth first search
+    Searches for a path from src to dest, using a naive depth first search
     :param graph: The graph object, with specifications of Graph.py
     :param src: The source vertex to search from
     :param dest: The destination vertex to find

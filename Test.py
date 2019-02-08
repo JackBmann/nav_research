@@ -109,10 +109,21 @@ def test_osm_a_star():
                          "OSM A*", "osm_a_star")
 
 
+def test_box_roads():
+    graph = Graph.read_graph("BoxRoads.txt")
+    print("Connections:       ", graph.connections)
+    print("Vertices:          ", graph.vertices)
+    print("Edges:             ", graph.edges)
+    print()
+    test_graph_algorithm(graph, dijkstra, graph.get_vertex(1), graph.get_vertex(), a_star_heuristic,
+                         "Box Roads A*", "box_roads")
+
+
 # test_dfs()
 # test_dijkstra()
 # test_a_star()
 # test_parse_osm()
-test_osm_dfs()
-test_osm_dijkstra()
-test_osm_a_star()
+# test_osm_dfs()
+# test_osm_dijkstra()
+# test_osm_a_star()
+test_box_roads()
