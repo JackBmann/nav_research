@@ -62,9 +62,8 @@ def dfs(graph, src, dest):
             return path
         else:
             if connection in graph.seen:
-                print(src, connection)
                 continue
-            #graph.add_seen(connection)
+            graph.add_seen(connection)
             path = dfs(graph, connection, dest)
             if not path:
                 continue
@@ -134,8 +133,3 @@ def a_star_heuristic(graph, src, dest):
     """
     distance = sqrt((src.get_latitude() - dest.get_latitude())**2 + (src.get_longitude() - dest.get_longitude())**2)
     return distance + graph.edges[(src, dest)].weight
-
-
-if __name__ == "__main__":
-    # do some testing here
-    print("Hello")
