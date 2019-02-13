@@ -24,9 +24,8 @@ class Graph:
     def __init__(self, edges):
         """
         Constructor for the Graph Class
-        Currently are bidrectional paths
+        Currently are bidirectional paths
         :param edges: A list of edges in the graph
-        :return void
         """
         vertices = {}
         connections = {}
@@ -190,7 +189,7 @@ class Graph:
         """
         Converts a networkx digraph into a Graph Object
         :param graph: The NetworkX Digraph to be parsed
-        :return: a Graph obejct
+        :return: a Graph object
         """
         identifier = 0
         vertices = {}  # hash of positional vertex tuples to vertex objects
@@ -301,7 +300,7 @@ class Graph:
 class Vertex:
     """
     Vertex object for use in the graph
-    :field id: the identifier value, an int
+    :field identifier: the identifier value, an int
     :field latitude: the first gps coordinate in the pair
     :field longitude: the second gps coordinate in the pair
     """
@@ -329,7 +328,7 @@ class Vertex:
                (self.get_longitude() == other.get_longitude())
 
     def __repr__(self):
-        return "{0} @ 0x{1}".format(str(self.identifier), str(hex(self.identifier)).upper())
+        return "{0}".format(str(self.identifier))
 
     def __str__(self):
         return str(self.identifier)
@@ -362,19 +361,43 @@ class Edge:
     :field first_vertex: The first vertex of the edge, a vertex object
     :field second_vertex: The second vertex of the edge, a vertex object
     :field weight: the weight of the edge, an int/float
+    :field speed_limit: the speed limit on this edge
+    :field average_speed: the average speed of traffic across this edge
+    :field standard_deviation_speed: the standard deviation of speeds across this edge
     """
     first_vertex = None
     second_vertex = None
     weight = None
+    speed_limit = 0
+    average_speed = 0
+    standard_deviation_speed = 0
 
-    def __init__(self, first_vertex, second_vertex, weight):
+    def __init__(self, first_vertex, second_vertex, weight, speed_limit=0, average_speed=0, standard_deviation_speed=0):
         """
         Constructor for the edge class
         :param first_vertex: The first vertex of the edge, a vertex object
         :param second_vertex: The second vertex of the edge, a vertex object
         :param weight: the weight of the edge, an int/float
-        :return: nothing, because its a constructor
+        :param speed_limit: the speed limit on this edge
+        :param average_speed: the average speed of traffic across this edge
+        :param standard_deviation_speed: the standard deviation of speeds across this edge
         """
         self.first_vertex = first_vertex
         self.second_vertex = second_vertex
         self.weight = weight
+        self.speed_limit = speed_limit
+        self.average_speed = average_speed
+        self.standard_deviation_speed = standard_deviation_speed
+
+    def __repr__(self):
+        return "{0} -> {1} @ {2}".format(str(self.first_vertex), str(self.second_vertex), str(self.speed_limit))
+
+    def get_speed_limit(self):
+        return self.speed_limit
+
+    def get_average_speed(self):
+        return self.average_speed
+
+    def get_standard_deviation_speed(self):
+        return self.standard_deviation_speed
+

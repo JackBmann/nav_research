@@ -51,6 +51,25 @@ def is_oneway(tags):
     return False
 
 
+def max_speed(tags):
+    """
+    Determines if the way represented by the given tags is one-way
+    :param tags: a list of tags from an OSM way
+    :return: the max_speed (in mph) of the given way, or 0 if none is specified
+    """
+    for tag in tags:
+        if tag.attrib["k"] == "maxspeed":
+            speed = tag.attrib["v"].split()
+            if len(speed) > 1 and speed[1] == "mph":
+                return int(speed[0])
+            if len(speed) > 1 and speed[1] == "knots":
+                return int(speed[0]) * 1.15078
+            else:
+                return int(speed[0]) * 0.6213712
+
+    return 0
+
+
 def parse_osm(path):
     vertices = {}
     edges = []
@@ -58,9 +77,6 @@ def parse_osm(path):
 
     root = elementTree.parse(path).getroot()
     for child in root:
-
-        # A boolean flag to filter out non-road nodes/ways/relations
-        valid = False
 
         if child.tag == "node":
             # A list of all of the metadata of this node that is used to filter out unwanted nodes and store metadata
@@ -84,6 +100,8 @@ def parse_osm(path):
             tags = child.findall('tag')
             # Boolean flag to handle two-way edge flipping.
             oneway = is_oneway(tags)
+            # The speed limit of the way, or 0 if there is not one specified
+            speed = max_speed(tags)
 
             if not valid_feature(tags):
                 continue
@@ -104,15 +122,15 @@ def parse_osm(path):
                 if prev_vertex:
                     # The haversine distance between the two vertexes
                     distance = abs(haversine(prev_vertex, vertex))
-
-                    edges.append(Edge(prev_vertex, vertex, distance))
+                    edges.append(Edge(prev_vertex, vertex, distance, speed))
 
                     # If the way is one-way, flip the edge and append it
                     if not oneway:
-                        edges.append(Edge(vertex, prev_vertex, distance))
+                        edges.append(Edge(vertex, prev_vertex, distance, speed))
                 else:
                     first_vertex = vertex
                 prev_vertex = vertex
+
             ways[child.attrib['id']] = (first_vertex, prev_vertex)  # store the first and last vertex of the way
 
             # Iterate through the tags of each way to parse its associated metadata
