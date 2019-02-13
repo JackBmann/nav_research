@@ -108,6 +108,47 @@ class Graph:
             current_edge = (current_edge[1], path[i])
             self.edge_colors[current_edge] = self.optimal_color
 
+    def zero_speed_limit(self):
+        """
+        finds if any roads have no speed_limit
+        :return: boolean (true if exists, false otherwise)
+        """
+        for edge in self.edges:
+            if self.edges[edge].get_speed_limit() == 0:
+                return True
+        return False
+
+    def expand_speeds(self):
+        """
+        expands the speed limit of valid roads to 0-marked roads
+        :return: None
+        """
+        while self.zero_speed_limit():
+            for vertex_id, first_vert in enumerate(self.vertices):
+                for second_vert in self.connections[first_vert]:
+                    start_edge = self.edges[(first_vert, second_vert)]
+                    if start_edge.get_speed_limit() == 0:
+                        for third_vert in self.connections[second_vert]:
+                            current_limit = self.edges[(second_vert, third_vert)].get_speed_limit()
+                            if current_limit == 0:
+                                continue
+                            if current_limit > 40:
+                                current_limit -= 5
+                                if current_limit < 40:
+                                    current_limit = 40
+                            start_edge.speed_limit = current_limit
+                            break
+                    else:
+                        current_limit = start_edge.get_speed_limit()
+                        if current_limit > 40:
+                            current_limit -= 5
+                            if current_limit < 40:
+                                current_limit = 40
+                        for third_vert in self.connections[second_vert]:
+                            if self.edges[(second_vert, third_vert)].get_speed_limit() == 0:
+                                self.edges[(second_vert, third_vert)].speed_limit = current_limit
+
+
     def clear_colors(self):
         """
         clears the seen hash_table which marks nodes
