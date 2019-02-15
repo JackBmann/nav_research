@@ -137,9 +137,13 @@ class Graph:
         """
         while self.zero_speed_limit():
             for vertex_id, first_vert in enumerate(self.vertices):
+                if first_vert not in self.connections:
+                    continue
                 for second_vert in self.connections[first_vert]:
                     start_edge = self.edges[(first_vert, second_vert)]
                     if start_edge.get_speed_limit() == 0:
+                        if second_vert not in self.connections:
+                            continue
                         for third_vert in self.connections[second_vert]:
                             current_limit = self.edges[(second_vert, third_vert)].get_speed_limit()
                             if current_limit == 0:
@@ -151,6 +155,8 @@ class Graph:
                             start_edge.speed_limit = current_limit
                             break
                     else:
+                        if second_vert not in self.connections:
+                            continue
                         current_limit = start_edge.get_speed_limit()
                         if current_limit > 40:
                             current_limit -= 5
