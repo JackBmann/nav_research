@@ -53,6 +53,9 @@ class Graph:
         self.edges = parsed_edges
         self.vertices = vertices
         self.connections = connections
+        if self.positive_speed_limit():
+            #  if we have at least one speed that we can expand off of, then extrapolate the speeds
+            self.expand_speeds()
 
     def connected(self, src, dest):
         """
@@ -114,6 +117,16 @@ class Graph:
         """
         for edge in self.edges:
             if self.edges[edge].get_speed_limit() == 0:
+                return True
+        return False
+
+    def positive_speed_limit(self):
+        """
+        finds if any road has a speed_limit
+        :return: boolean (true if exists, false otherwise)
+        """
+        for edge in self.edges:
+            if self.edges[edge].get_speed_limit() > 0:
                 return True
         return False
 
