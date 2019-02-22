@@ -1,5 +1,5 @@
 """
-Created By Michael Bolot and John (Jack) Baumann for 2018 research
+Created By Michael Bolot and John (Jack) Baumann for Fall 2018 - Spring 2019 research
 """
 import networkx
 from sys import maxsize
@@ -82,7 +82,7 @@ class Graph:
                 if (new_edge, dest_edge) in scanned:
                     if scanned[(new_edge, dest_edge)] < best:
                         best = scanned[(new_edge, dest_edge)] + 1
-                dist = self.edge_distance(new_edge, dest_edge)
+                dist = self.edge_distance(new_edge, dest_edge, scanned)
                 if dist:
                     dist += 1
                     if dist < best:
@@ -92,7 +92,7 @@ class Graph:
                 if (new_edge, dest_edge) in scanned:
                     if scanned[(new_edge, dest_edge)] < best:
                         best = scanned[(new_edge, dest_edge)] + 1
-                dist = self.edge_distance(new_edge, dest_edge)
+                dist = self.edge_distance(new_edge, dest_edge, scanned)
                 if dist:
                     dist += 1
                     if dist < best:
@@ -119,15 +119,14 @@ class Graph:
                     corr = 1 - (distance * 0.1)
                     if corr < 0.09:
                         corr = 0
-                    self.edge_correlation[edge.id][other_edge.id] = corr
+                    self.edge_correlation[edge.get_id()][other_edge.get_id()] = corr
 
                 if edge == other_edge:
                     continue
 
                 distance = self.edge_distance(edge, other_edge, scanned)
                 corr = 1 - (distance * 0.1)
-                self.edge_correlation[edge.id][other_edge.id] = corr
-
+                self.edge_correlation[edge.get_id()][other_edge.get_id()] = corr
 
     def connected(self, src, dest):
         """
@@ -394,7 +393,7 @@ class Vertex:
     :field latitude: the first gps coordinate in the pair
     :field longitude: the second gps coordinate in the pair
     """
-    identifier = 0  # basic initialization for id, should not be left at 0
+    edge_identifier_iterator = 0  # basic initialization for id, should not be left at 0
     latitude = 0.0  # basic initialization for latitude, should not be left at 0.0
     longitude = 0.0  # basic initialization for longitude, should not be left at 0.0
 
@@ -444,7 +443,10 @@ class Vertex:
         """
         return self.longitude
 
-identifier = 0
+
+edge_identifier_iterator = 0
+
+
 class Edge:
     """
     Edge object for use in the Graph
@@ -473,9 +475,9 @@ class Edge:
         :param average_speed: the average speed of traffic across this edge
         :param standard_deviation_speed: the standard deviation of speeds across this edge
         """
-        global identifier
-        self.id = identifier
-        identifier += 1
+        global edge_identifier_iterator
+        self.id = edge_identifier_iterator
+        edge_identifier_iterator += 1
         self.first_vertex = first_vertex
         self.second_vertex = second_vertex
         self.weight = weight
@@ -485,6 +487,9 @@ class Edge:
 
     def __repr__(self):
         return "{0} -> {1} @ {2}".format(str(self.first_vertex), str(self.second_vertex), str(self.speed_limit))
+
+    def get_id(self):
+        return self.id
 
     def get_speed_limit(self):
         return self.speed_limit
