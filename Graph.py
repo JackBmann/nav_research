@@ -2,6 +2,7 @@
 Created By Michael Bolot and John (Jack) Baumann for 2018 research
 """
 import networkx
+from sys import maxsize
 
 
 class Graph:
@@ -20,6 +21,7 @@ class Graph:
     edge_colors = {}
     current_node = 0
     optimal_color = 0  # 0 means the edge is on an optimal path, one means it is not
+    edge_correlation = []
 
     def __init__(self, edges):
         """
@@ -56,6 +58,76 @@ class Graph:
         if self.positive_speed_limit():
             #  if we have at least one speed that we can expand off of, then extrapolate the speeds
             self.expand_speeds()
+        self.edge_correlation = [[None] * len(self.edges)] * len(self.edges)  # first fill in the array for the entries
+        # we will arbitrarily fill in the list, so it is necessary to have a properly filled array
+        self.create_correlations()
+
+    def edge_distance(self, source_edge, dest_edge, scanned):
+        """
+        gives the distance between two edges
+        :param source_edge: the source edge
+        :param dest_edge: the destination edge
+        :param scanned: a dict of things already scanned
+        :return: dist, an int representing the distance between the two edges, or none
+        """
+        dist = None
+        if source_edge.second_vertex == dest_edge.first_vertex:
+            dist = 1
+            scanned[(source_edge, dest_edge)] = 1
+            scanned[(dest_edge, source_edge)] = 1
+        else:
+            best = maxsize
+            for end_point in self.connections[source_edge.second_vertex]:
+                new_edge = self.edges[(end_point, source_edge.second_vertex)]
+                if (new_edge, dest_edge) in scanned:
+                    if scanned[(new_edge, dest_edge)] < best:
+                        best = scanned[(new_edge, dest_edge)] + 1
+                dist = self.edge_distance(new_edge, dest_edge)
+                if dist:
+                    dist += 1
+                    if dist < best:
+                        best = dist
+            for start_point in self.connections[source_edge.first_vertex]:
+                new_edge = self.edges[(start_point, source_edge.first_vertex)]
+                if (new_edge, dest_edge) in scanned:
+                    if scanned[(new_edge, dest_edge)] < best:
+                        best = scanned[(new_edge, dest_edge)] + 1
+                dist = self.edge_distance(new_edge, dest_edge)
+                if dist:
+                    dist += 1
+                    if dist < best:
+                        best = dist
+            if best != maxsize:
+                dist = best
+        scanned[(source_edge, dest_edge)] = dist
+        scanned[(dest_edge, source_edge)] = dist
+
+        return dist
+
+    def create_correlations(self):
+        """
+        Spreads the correlations out through the whole graph
+        Currently very slow, distances are being re-calculated
+        Can be solved by passing in a dict in this function
+        :return: None
+        """
+        scanned = {}
+        for edge in self.edges:
+            for other_edge in self.edges:
+                if (edge, other_edge) in scanned:
+                    distance = scanned[(edge, other_edge)]
+                    corr = 1 - (distance * 0.1)
+                    if corr < 0.09:
+                        corr = 0
+                    self.edge_correlation[edge.id][other_edge.id] = corr
+
+                if edge == other_edge:
+                    continue
+
+                distance = self.edge_distance(edge, other_edge, scanned)
+                corr = 1 - (distance * 0.1)
+                self.edge_correlation[edge.id][other_edge.id] = corr
+
 
     def connected(self, src, dest):
         """
@@ -373,7 +445,7 @@ class Vertex:
         """
         return self.longitude
 
-
+identifier = 0
 class Edge:
     """
     Edge object for use in the Graph
@@ -390,6 +462,7 @@ class Edge:
     speed_limit = 0
     average_speed = 0
     standard_deviation_speed = 0
+    id = None
 
     def __init__(self, first_vertex, second_vertex, weight, speed_limit=0, average_speed=0, standard_deviation_speed=0):
         """
@@ -401,6 +474,9 @@ class Edge:
         :param average_speed: the average speed of traffic across this edge
         :param standard_deviation_speed: the standard deviation of speeds across this edge
         """
+        global identifier
+        self.id = identifier
+        identifier += 1
         self.first_vertex = first_vertex
         self.second_vertex = second_vertex
         self.weight = weight
