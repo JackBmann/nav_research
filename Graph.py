@@ -238,7 +238,6 @@ class Graph:
                             if self.edges[(second_vert, third_vert)].get_speed_limit() == 0:
                                 self.edges[(second_vert, third_vert)].speed_limit = current_limit
 
-
     def clear_colors(self):
         """
         clears the seen hash_table which marks nodes
