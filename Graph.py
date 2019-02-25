@@ -73,30 +73,25 @@ class Graph:
         :param scanned: a dict of things already scanned
         :return: dist, an int representing the distance between the two edges, or none
         """
-        dist = None
-        if source_edge.second_vertex == dest_edge.first_vertex:
+        print(source_edge.identifier, dest_edge.identifier, scanned)
+        if (source_edge, dest_edge) in scanned:
+            return scanned[(source_edge,dest_edge)]
+        dist = maxsize
+        if source_edge.get_second_vertex() == dest_edge.get_first_vertex():
             dist = 1
             scanned[(source_edge, dest_edge)] = 1
             scanned[(dest_edge, source_edge)] = 1
         else:
             best = maxsize
-            for end_point in self.connections[source_edge.second_vertex]:
-                new_edge = self.edges[(end_point, source_edge.second_vertex)]
+            if source_edge.get_second_vertex() not in self.connections:
+                return dist
+            for end_point in self.connections[source_edge.get_second_vertex()]:
+                new_edge = self.edges[(source_edge.get_second_vertex(), end_point)]
                 if (new_edge, dest_edge) in scanned:
                     if scanned[(new_edge, dest_edge)] < best:
                         best = scanned[(new_edge, dest_edge)] + 1
                 dist = self.edge_distance(new_edge, dest_edge, scanned)
-                if dist:
-                    dist += 1
-                    if dist < best:
-                        best = dist
-            for start_point in self.connections[source_edge.first_vertex]:
-                new_edge = self.edges[(start_point, source_edge.first_vertex)]
-                if (new_edge, dest_edge) in scanned:
-                    if scanned[(new_edge, dest_edge)] < best:
-                        best = scanned[(new_edge, dest_edge)] + 1
-                dist = self.edge_distance(new_edge, dest_edge, scanned)
-                if dist:
+                if dist != maxsize:
                     dist += 1
                     if dist < best:
                         best = dist
@@ -116,20 +111,22 @@ class Graph:
         """
         scanned = {}
         for edge in self.edges:
+            first_edge = self.edges[edge]
             for other_edge in self.edges:
-                if (edge, other_edge) in scanned:
-                    distance = scanned[(edge, other_edge)]
+                second_edge = self.edges[edge]
+                if (first_edge, second_edge) in scanned:
+                    distance = scanned[(first_edge, second_edge)]
                     corr = 1 - (distance * 0.1)
                     if corr < 0.09:
                         corr = 0
-                    self.edge_correlation[edge.get_id()][other_edge.get_id()] = corr
+                    self.edge_correlation[first_edge.get_identifier()][second_edge.get_identifier()] = corr
 
                 if edge == other_edge:
                     continue
 
-                distance = self.edge_distance(edge, other_edge, scanned)
+                distance = self.edge_distance(first_edge, second_edge, scanned)
                 corr = 1 - (distance * 0.1)
-                self.edge_correlation[edge.get_id()][other_edge.get_id()] = corr
+                self.edge_correlation[first_edge.get_identifier()][second_edge.get_identifier()] = corr
 
     def connected(self, src, dest):
         """
@@ -200,7 +197,7 @@ class Graph:
         :return: boolean (true if exists, false otherwise)
         """
         for edge in self.edges:
-            if self.edges[edge].get_speed_limit() > 0:
+            if self.edges[edge].get_speed_limit():
                 return True
         return False
 
@@ -348,8 +345,19 @@ class Graph:
                 if edge_flag == 1:
                     #  if we are in the edges block, read in the edges
                     parsed_line = tuple(map(int, line.split(",")))
-                    edges.append(Edge(vertices[parsed_line[0]], vertices[parsed_line[1]], parsed_line[2],
-                                      parsed_line[3], parsed_line[4], parsed_line[5]))
+                    num_data = len(parsed_line)
+                    edge = Edge(vertices[parsed_line[0]], vertices[parsed_line[1]], parsed_line[2])
+                    if num_data > 3:
+                        edge.set_average_time(parsed_line[3])
+                    if num_data > 4:
+                        edge.set_standard_deviation_time(parsed_line[4])
+                    if num_data > 5:
+                        edge.set_speed_limit(parsed_line[5])
+                    if num_data > 6:
+                        edge.set_average_speed(parsed_line[6])
+                    if num_data > 7:
+                        edge.set_standard_deviation_speed(parsed_line[7])
+                    edges.append(edge)
 
                 if vertices_flag == 1:
                     #  if we are in the vertices block, read in the vertices
@@ -425,7 +433,7 @@ class Vertex:
     :field latitude: the first gps coordinate in the pair
     :field longitude: the second gps coordinate in the pair
     """
-    edge_identifier_iterator = 0  # basic initialization for id, should not be left at 0
+    identifier = 0  # basic initialization for id, should not be left at 0
     latitude = 0.0  # basic initialization for latitude, should not be left at 0.0
     longitude = 0.0  # basic initialization for longitude, should not be left at 0.0
 
@@ -489,30 +497,37 @@ class Edge:
     :field average_speed: the average speed of traffic across this edge
     :field standard_deviation_speed: the standard deviation of speeds across this edge
     """
+    identifier = None
     first_vertex = None
     second_vertex = None
     weight = None
-    speed_limit = 0
-    average_speed = 0
-    standard_deviation_speed = 0
-    id = None
+    average_time = None
+    standard_deviation_time = None
+    speed_limit = None
+    average_speed = None
+    standard_deviation_speed = None
 
-    def __init__(self, first_vertex, second_vertex, weight, speed_limit=0, average_speed=0, standard_deviation_speed=0):
+    def __init__(self, first_vertex, second_vertex, weight, average_time=None, standard_deviation_time=None,
+                 speed_limit=None, average_speed=None, standard_deviation_speed=None):
         """
         Constructor for the edge class
         :param first_vertex: The first vertex of the edge, a vertex object
         :param second_vertex: The second vertex of the edge, a vertex object
         :param weight: the weight of the edge, an int/float
+        :param average_time: the average total time to travel across this edge
+        :param standard_deviation_time: the standard deviation of travel time across this edge
         :param speed_limit: the speed limit on this edge
         :param average_speed: the average speed of traffic across this edge
         :param standard_deviation_speed: the standard deviation of speeds across this edge
         """
         global edge_identifier_iterator
-        self.id = edge_identifier_iterator
+        self.identifier = edge_identifier_iterator
         edge_identifier_iterator += 1
         self.first_vertex = first_vertex
         self.second_vertex = second_vertex
         self.weight = weight
+        self.average_time = average_time
+        self.standard_deviation_time = standard_deviation_time
         self.speed_limit = speed_limit
         self.average_speed = average_speed
         self.standard_deviation_speed = standard_deviation_speed
@@ -521,15 +536,30 @@ class Edge:
         return "{0} -> {1} @ {2}".format(str(self.first_vertex), str(self.second_vertex), str(self.speed_limit))
 
     def __cmp__(self, other):
-        if self.id < other.id:
+        if self.identifier < other.id:
             return -1
-        if self.id == other.id:
+        if self.identifier == other.id:
             return 0
-        if self.id > other.id:
+        if self.identifier > other.id:
             return 1
 
-    def get_id(self):
-        return self.id
+    def get_identifier(self):
+        return self.identifier
+
+    def get_first_vertex(self):
+        return self.first_vertex
+
+    def get_second_vertex(self):
+        return self.second_vertex
+
+    def get_weight(self):
+        return self.weight
+
+    def get_average_time(self):
+        return self.average_time
+
+    def get_standard_deviation_time(self):
+        return self.standard_deviation_time
 
     def get_speed_limit(self):
         return self.speed_limit
@@ -540,3 +570,20 @@ class Edge:
     def get_standard_deviation_speed(self):
         return self.standard_deviation_speed
 
+    def set_weight(self, w):
+        self.weight = w
+
+    def set_average_time(self, avg_time):
+        self.average_time = avg_time
+
+    def set_standard_deviation_time(self, std_dev_time):
+        self.standard_deviation_time = std_dev_time
+
+    def set_speed_limit(self, spd_limit):
+        self.speed_limit = spd_limit
+
+    def set_average_speed(self, avg_spd):
+        self.average_speed = avg_spd
+
+    def set_standard_deviation_speed(self, std_dev_spd):
+        self.standard_deviation_speed = std_dev_spd
