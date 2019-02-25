@@ -23,7 +23,7 @@ class Graph:
     optimal_color = 0  # 0 means the edge is on an optimal path, one means it is not
     edge_correlation = []
 
-    def __init__(self, edges):
+    def __init__(self, edges, correlations=None):
         """
         Constructor for the Graph Class
         Currently are bidirectional paths
@@ -58,9 +58,12 @@ class Graph:
         if self.positive_speed_limit():
             #  if we have at least one speed that we can expand off of, then extrapolate the speeds
             self.expand_speeds()
-        self.edge_correlation = [[None] * len(self.edges)] * len(self.edges)  # first fill in the array for the entries
-        # we will arbitrarily fill in the list, so it is necessary to have a properly filled array
-        self.create_correlations()
+        if not correlations or len(correlations) == 0:
+            self.edge_correlation = [[None] * len(self.edges)] * len(self.edges)  # first fill in the array for the entries
+            # we will arbitrarily fill in the list, so it is necessary to have a properly filled array
+            self.create_correlations()
+        else:
+            self.edge_correlation = correlations
 
     def edge_distance(self, source_edge, dest_edge, scanned):
         """
@@ -317,7 +320,9 @@ class Graph:
             edges = []
             edge_flag = 0
             vertices = []  # ordered list of vertices
+            correlations = None
             vertices_flag = 0
+            corr_flag = 0
             for line in input_file:
                 line = line.strip()
 
@@ -334,17 +339,31 @@ class Graph:
                     vertices_flag = 0
                     continue
 
+                if line == "CORRELATIONS":
+                    edge_flag = 0
+                    vertices_flag = 0
+                    corr_flag = 1
+                    correlations = []
+
                 if edge_flag == 1:
                     #  if we are in the edges block, read in the edges
                     parsed_line = tuple(map(int, line.split(",")))
-                    edges.append(Edge(vertices[parsed_line[0]], vertices[parsed_line[1]], parsed_line[2]))
+                    edges.append(Edge(vertices[parsed_line[0]], vertices[parsed_line[1]], parsed_line[2],
+                                      parsed_line[3], parsed_line[4], parsed_line[5]))
 
                 if vertices_flag == 1:
                     #  if we are in the vertices block, read in the vertices
                     parsed_line = tuple(map(int, line.split(",")))
                     vertices.append(Vertex(parsed_line[0], parsed_line[1], parsed_line[2]))
 
-            return Graph(edges)
+                if corr_flag == 1:
+                    #  if we are in the correlations block, read in the correlations
+                    val = line.split(",")
+                    val.remove(' ')
+                    parsed_line = tuple(map(float, val))
+                    correlations.append(parsed_line)
+
+            return Graph(edges, correlations)
 
     def write_graph(self, file_name):
         """
@@ -367,13 +386,26 @@ class Graph:
             output_string += '\n'
             output_string += "EDGES"
             output_string += '\n'
-            for pair in self.edges:
-                edge = self.edges[pair]
+            out_edges = sorted(self.edges.values())
+            for edge in out_edges:
                 output_string += str(edge.first_vertex)
                 output_string += ','
                 output_string += str(edge.second_vertex)
                 output_string += ','
                 output_string += str(edge.weight)
+                output_string += ','
+                output_string += str(edge.speed_limit)
+                output_string += ','
+                output_string += str(edge.average_speed)
+                output_string += ','
+                output_string += str(edge.standard_deviation_speed)
+                output_string += '\n'
+            output_string += "CORRELATIONS"
+            output_string += '\n'
+            for edge_list in self.edge_correlation:
+                for value in edge_list:
+                    output_string += str(value)
+                    output_string += ','
                 output_string += '\n'
             write_file.write(output_string)
 
@@ -487,6 +519,14 @@ class Edge:
 
     def __repr__(self):
         return "{0} -> {1} @ {2}".format(str(self.first_vertex), str(self.second_vertex), str(self.speed_limit))
+
+    def __cmp__(self, other):
+        if self.id < other.id:
+            return -1
+        if self.id == other.id:
+            return 0
+        if self.id > other.id:
+            return 1
 
     def get_id(self):
         return self.id
