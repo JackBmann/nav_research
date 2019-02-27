@@ -65,42 +65,50 @@ class Graph:
         else:
             self.edge_correlation = correlations
 
-    def edge_distance(self, source_edge, dest_edge, scanned):
+    def create_edge_connections(self):
         """
-        gives the distance between two edges
-        :param source_edge: the source edge
-        :param dest_edge: the destination edge
-        :param scanned: a dict of things already scanned
-        :return: dist, an int representing the distance between the two edges, or none
+        views the vertexes as edges and the edges as vertexes
+        constructs adjacencies based on that view
+        :return: a dict from an edge to a set of edges representing these adjacencies
         """
-        print(source_edge.identifier, dest_edge.identifier, scanned)
-        if (source_edge, dest_edge) in scanned:
-            return scanned[(source_edge,dest_edge)]
-        dist = maxsize
-        if source_edge.get_second_vertex() == dest_edge.get_first_vertex():
-            dist = 1
-            scanned[(source_edge, dest_edge)] = 1
-            scanned[(dest_edge, source_edge)] = 1
-        else:
-            best = maxsize
-            if source_edge.get_second_vertex() not in self.connections:
-                return dist
-            for end_point in self.connections[source_edge.get_second_vertex()]:
-                new_edge = self.edges[(source_edge.get_second_vertex(), end_point)]
-                if (new_edge, dest_edge) in scanned:
-                    if scanned[(new_edge, dest_edge)] < best:
-                        best = scanned[(new_edge, dest_edge)] + 1
-                dist = self.edge_distance(new_edge, dest_edge, scanned)
-                if dist != maxsize:
-                    dist += 1
-                    if dist < best:
-                        best = dist
-            if best != maxsize:
-                dist = best
-        scanned[(source_edge, dest_edge)] = dist
-        scanned[(dest_edge, source_edge)] = dist
+        connections = {}
+        for edge in self.edges:
+            edge_obj = self.edges[edge]
+            if edge_obj.identifier not in self.connections:
+                connections[edge_obj.identifier] = set()
+            second_vert = edge_obj.second_vertex
+            for third_vert in self.connections[second_vert]:
+                connected_edge = self.edges[(second_vert, third_vert)]
+                connections[edge_obj.identifier].add(connected_edge.identifier)
+                if connected_edge.identifier not in connections:
+                    connections[connected_edge.identifier] = set()
+                connections[connected_edge.identifier].add(edge_obj.identifier)
+        return connections
 
-        return dist
+    def edge_distance(self):
+        """
+        Uses floyd-warshall to fill in the distances
+        :return: void
+        """
+        connections = self.create_edge_connections()
+        distances = [[None] * len(self.edges)] * len(self.edges)
+        for start_edge in connections:
+            for end_edge in connections[start_edge]:
+                distances[start_edge][end_edge] = 1
+        for edge in self.edges:
+            edge_obj = self.edges[edge]
+            distances[edge_obj.identifier][edge_obj.identifier] = 0
+        for edge in self.edges:
+            first_id = edge.identifier
+            for second_edge in self.edges:
+                second_id = second_edge.identifier
+                for third_edge in self.edges:
+                    third_id = third_edge.id
+                    if distances[second_id][third_id] > distances[second_id][first_id] + distances[first_id][third_id]:
+                        distances[second_id][third_id] = distances[second_id][first_id] + distances[first_id][third_id]
+        return distances
+
+
 
     def create_correlations(self):
         """
@@ -109,24 +117,22 @@ class Graph:
         Can be solved by passing in a dict in this function
         :return: None
         """
-        scanned = {}
+        distances = self.edge_distance()
         for edge in self.edges:
             first_edge = self.edges[edge]
             for other_edge in self.edges:
                 second_edge = self.edges[edge]
-                if (first_edge, second_edge) in scanned:
-                    distance = scanned[(first_edge, second_edge)]
+                distance = distances[first_edge.get_identifier()][second_edge.get_identifier()]
+                if distance == None:
+                    corr = 0
+                else:
                     corr = 1 - (distance * 0.1)
                     if corr < 0.09:
                         corr = 0
-                    self.edge_correlation[first_edge.get_identifier()][second_edge.get_identifier()] = corr
+                self.edge_correlation[first_edge.get_identifier()][second_edge.get_identifier()] = corr
 
                 if edge == other_edge:
-                    continue
-
-                distance = self.edge_distance(first_edge, second_edge, scanned)
-                corr = 1 - (distance * 0.1)
-                self.edge_correlation[first_edge.get_identifier()][second_edge.get_identifier()] = corr
+                    self.edge_correlation[first_edge.get_identifier()][second_edge.get_identifier()] = 1
 
     def connected(self, src, dest):
         """
