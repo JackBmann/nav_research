@@ -77,6 +77,8 @@ class Graph:
             if edge_obj.identifier not in self.connections:
                 connections[edge_obj.identifier] = set()
             second_vert = edge_obj.second_vertex
+            if second_vert not in self.connections:
+                continue
             for third_vert in self.connections[second_vert]:
                 connected_edge = self.edges[(second_vert, third_vert)]
                 connections[edge_obj.identifier].add(connected_edge.identifier)
@@ -99,11 +101,11 @@ class Graph:
             edge_obj = self.edges[edge]
             distances[edge_obj.identifier][edge_obj.identifier] = 0
         for edge in self.edges:
-            first_id = edge.identifier
+            first_id = self.edges[edge].identifier
             for second_edge in self.edges:
-                second_id = second_edge.identifier
+                second_id = self.edges[second_edge].identifier
                 for third_edge in self.edges:
-                    third_id = third_edge.id
+                    third_id = self.edges[third_edge].identifier
                     if distances[second_id][third_id] > distances[second_id][first_id] + distances[first_id][third_id]:
                         distances[second_id][third_id] = distances[second_id][first_id] + distances[first_id][third_id]
         return distances

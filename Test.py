@@ -41,6 +41,7 @@ def print_graph(graph):
     print("Graph Connections: ", graph.connections)
     print("Graph Vertices:    ", graph.vertices)
     print("Graph Edges:       ", graph.edges)
+    print("Graph Correlations:       ", graph.edge_correlation)
 
 
 def test_graph_algorithm(graph, algorithm, src, dest, heuristic, name, filename):
