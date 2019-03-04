@@ -74,7 +74,7 @@ class Graph:
         connections = {}
         for edge in self.edges:
             edge_obj = self.edges[edge]
-            if edge_obj.identifier not in self.connections:
+            if edge_obj.identifier not in connections:
                 connections[edge_obj.identifier] = set()
             second_vert = edge_obj.second_vertex
             if second_vert not in self.connections:
@@ -93,21 +93,27 @@ class Graph:
         :return: void
         """
         connections = self.create_edge_connections()
-        distances = [[None] * len(self.edges)] * len(self.edges)
+        print(connections)
+        distances = [[maxsize] * len(self.edges)] * len(self.edges)
+        print(distances)
+        print(type(distances[0][0]))
         for start_edge in connections:
             for end_edge in connections[start_edge]:
+                #  print(start_edge, end_edge)
                 distances[start_edge][end_edge] = 1
+        print(distances[0])
         for edge in self.edges:
             edge_obj = self.edges[edge]
             distances[edge_obj.identifier][edge_obj.identifier] = 0
+        print(distances)
         for edge in self.edges:
-            first_id = self.edges[edge].identifier
+            k = self.edges[edge].identifier
             for second_edge in self.edges:
-                second_id = self.edges[second_edge].identifier
+                i = self.edges[second_edge].identifier
                 for third_edge in self.edges:
-                    third_id = self.edges[third_edge].identifier
-                    if distances[second_id][third_id] > distances[second_id][first_id] + distances[first_id][third_id]:
-                        distances[second_id][third_id] = distances[second_id][first_id] + distances[first_id][third_id]
+                    j = self.edges[third_edge].identifier
+                    if distances[i][j] > distances[i][k] + distances[k][j]:
+                        distances[i][j] = distances[i][k] + distances[k][j]
         return distances
 
 
@@ -120,6 +126,7 @@ class Graph:
         :return: None
         """
         distances = self.edge_distance()
+        print(distances)
         for edge in self.edges:
             first_edge = self.edges[edge]
             for other_edge in self.edges:
