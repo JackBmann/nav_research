@@ -59,7 +59,7 @@ class Graph:
             #  if we have at least one speed that we can expand off of, then extrapolate the speeds
             self.expand_speeds()
         if not correlations or len(correlations) == 0:
-            self.edge_correlation = [[None] * len(self.edges)] * len(self.edges)  # first fill in the array for the entries
+            self.edge_correlation = [[None for i in range(len(self.edges))]for j in range(len(self.edges))]  # first fill in the array for the entries
             # we will arbitrarily fill in the list, so it is necessary to have a properly filled array
             self.create_correlations()
         else:
@@ -93,19 +93,13 @@ class Graph:
         :return: void
         """
         connections = self.create_edge_connections()
-        print(connections)
-        distances = [[maxsize] * len(self.edges)] * len(self.edges)
-        print(distances)
-        print(type(distances[0][0]))
+        distances = [[maxsize for i in range(len(self.edges))] for j in range(len(self.edges))]
         for start_edge in connections:
             for end_edge in connections[start_edge]:
-                #  print(start_edge, end_edge)
                 distances[start_edge][end_edge] = 1
-        print(distances[0])
         for edge in self.edges:
             edge_obj = self.edges[edge]
             distances[edge_obj.identifier][edge_obj.identifier] = 0
-        print(distances)
         for edge in self.edges:
             k = self.edges[edge].identifier
             for second_edge in self.edges:
@@ -126,22 +120,19 @@ class Graph:
         :return: None
         """
         distances = self.edge_distance()
-        print(distances)
+        print("Distances is: ", distances)
         for edge in self.edges:
             first_edge = self.edges[edge]
             for other_edge in self.edges:
-                second_edge = self.edges[edge]
+                second_edge = self.edges[other_edge]
                 distance = distances[first_edge.get_identifier()][second_edge.get_identifier()]
                 if distance == None:
                     corr = 0
                 else:
-                    corr = 1 - (distance * 0.1)
-                    if corr < 0.09:
-                        corr = 0
+                    corr = 0.9**float(distance)
                 self.edge_correlation[first_edge.get_identifier()][second_edge.get_identifier()] = corr
 
-                if edge == other_edge:
-                    self.edge_correlation[first_edge.get_identifier()][second_edge.get_identifier()] = 1
+
 
     def connected(self, src, dest):
         """
