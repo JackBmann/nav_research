@@ -65,6 +65,20 @@ class Graph:
         else:
             self.edge_correlation = correlations
 
+        # after we have the correlations, update the edge weight to reflect this
+        '''
+        for edge in self.edges:
+            edge_obj = self.edges[edge]
+            corr = self.edge_correlation[edge_obj.get_identifier()]
+            self_total = 0
+            max_potential = 0
+            for value in corr:
+                max_potential += 1
+                self_total += value
+            edge_obj.weight = edge_obj.weight * ((self_total/max_potential)**-1)
+            print(edge_obj.weight)
+        '''
+
     def create_edge_connections(self):
         """
         views the vertexes as edges and the edges as vertexes

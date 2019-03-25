@@ -104,32 +104,127 @@ def dijkstra(graph, src, dest, heuristic):
         if current_vertex not in graph.seen:
             graph.add_seen(current_vertex)
         for connection in graph.connections[current_vertex]:
-            best_move = distance[current_vertex] + heuristic(graph, current_vertex, connection)
+            best_move = distance[current_vertex] + heuristic(graph, current_vertex, connection, parents)
             if best_move < distance[connection]:
                 distance[connection] = best_move
                 parents[connection] = current_vertex
                 q.put((best_move, connection.get_identifier()))
 
 
-def djikstra_heuristic(graph, src, dest):
+def djikstra_heuristic(graph, src, dest, parents):
     """
     Heuristic for djikstra's, just returns the edge between src and dest
     :param graph: the graph
     :param src: source vertex
     :param dest: dest vertex
+    :param parents: unused for this function; included so that the more sophisticated heuristics can also be passed
     :return: the edge weight between src and dest, a number (float)
     """
     return graph.edges[(src, dest)].weight
 
 
-def a_star_heuristic(graph, src, dest):
+def a_star_heuristic(graph, src, dest, parents):
     """
     Heuristic function for a*
     Currently just calculates the euclidean distance between src and dest to inform its decision
     :param graph: The graph for the function, not used
     :param src: the source vertex (a vertex object)
     :param dest: the destination vertex (a vertex object)
+    :param parents: unused for this function; included so that the more sophisticated heuristics can also be passed
     :return: distance, a number (float) value that represents the distance between src and dest
     """
     distance = sqrt((src.get_latitude() - dest.get_latitude())**2 + (src.get_longitude() - dest.get_longitude())**2)
     return distance + graph.edges[(src, dest)].weight
+
+
+def mean_heuristic(graph, src, dest, parents):
+    """
+    Heuristic function that works off of the following methodology:
+    If you are going close to the speed limit (based on mean speed), then find a correlated edge
+    If you are not going close to the speed limit (based on mean speed), then find an uncorrelated edge
+    :param graph: the graph for the function
+    :param src: the src node (a vertex object)
+    :param dest: the destination node (a vertex object)
+    :param parents: the parents graph used to find the current edge that will be used for correlation matching
+    :return: distance, a number (float) value that represents the distance between src and dest
+    """
+    current_weight = graph.edges[(src, dest)].weight  # the current weight with no modification
+    SPEED_THRESH = 0.15
+    distance = 0
+    if src not in parents:
+        # if this is the first edge in the path, don't bother with correlations
+        distance = current_weight
+        return distance
+    current_edge = graph.edges[(parents[src], src)]
+    next_edge = graph.edges[(src, dest)]
+    average = current_edge.average_speed
+    speed_limit = current_edge.speed_limit
+    if average is None or speed_limit is None:
+        distance = current_weight
+        return distance
+    if average/speed_limit < SPEED_THRESH:
+        '''
+        if we are going fast, we want to stay on a similarly correlated edge
+        the correlation is inverted because we want a lower weight for more correlated edges
+        so an edge with a weight 10 correlated with previous edge at .9 would result in weight 1 with inversion
+        without inversion, it would be at 9, which is potentially unfavorable
+        '''
+        distance = current_weight * (1 - graph.edge_correlation[current_edge.identifier][next_edge.identifier])
+    else:
+        distance = current_weight * (graph.edge_correlation[current_edge.identifier][next_edge.identifier])
+
+    return distance
+
+def deviation_heuristic(graph, src, dest, parents):
+    """
+    Heurisitic functionality based on the std deviation and the mean (speed on both accounts)
+    Functions similarly to the mean heuristic until the end, where it looks at std_deviation
+    :param graph: the graph for the function
+    :param src: the src node (a vertex obj)
+    :param dest: the dest node (a vertex obj)
+    :param parents: the parents graph used to find the current edge that will be used for correlation matching
+    :return: distance, a number (float) that represents the distance between src and dest
+    """
+    current_weight = graph.edges[(src, dest)].weight  # the current weight with no modification
+    # arbitrarily defined constants
+    SPEED_THRESH = 0.15
+    DEV_THRESH = 0.05
+    REDUCE = 0.7
+
+    distance = 0
+    if src not in parents:
+        # if this is the first edge in the path, don't bother with correlations
+        distance = current_weight
+        return distance
+    current_edge = graph.edges[(parents[src], src)]
+    next_edge = graph.edges[(src, dest)]
+    average = current_edge.average_speed
+    speed_limit = current_edge.speed_limit
+
+    if average is None or speed_limit is None:
+        distance = current_weight
+        return distance
+
+    if average / speed_limit < SPEED_THRESH:
+        '''
+        if we are going fast, we want to stay on a similarly correlated edge
+        the correlation is inverted because we want a lower weight for more correlated edges
+        so an edge with a weight 10 correlated with previous edge at .9 would result in weight 1 with inversion
+        without inversion, it would be at 9, which is potentially unfavorable
+        '''
+        distance = current_weight * (1 - graph.edge_correlation[current_edge.identifier][next_edge.identifier])
+        # In addition, if this next edge has a good standard deviation, reduce the weight further
+        if current_edge.standard_deviation_speed < DEV_THRESH*average:
+            distance *= REDUCE
+
+    else:
+        distance = current_weight * (graph.edge_correlation[current_edge.identifier][next_edge.identifier])
+        # In addition, if this next edge has a good standard deviation, reduce the weight further
+        if current_edge.standard_deviation_speed < DEV_THRESH * average:
+            distance *= REDUCE
+    return distance
+
+
+
+# Turn everything into time
+# E(X2|X1):

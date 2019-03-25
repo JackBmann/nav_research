@@ -1,5 +1,5 @@
 from Graph import Graph, Vertex, Edge
-from SearchAlgorithms import dfs, dijkstra, djikstra_heuristic, a_star_heuristic
+from SearchAlgorithms import dfs, dijkstra, djikstra_heuristic, a_star_heuristic, mean_heuristic, deviation_heuristic
 from GraphDisplay import draw_graph
 from networkx import read_shp
 from OSMParser import parse_osm
@@ -110,6 +110,10 @@ def test_box_roads():
     print_graph(graph)
     test_graph_algorithm(graph, dijkstra, graph.get_vertex(0), graph.get_vertex(33), a_star_heuristic,
                          "Box Roads A*", "box_roads")
+    test_graph_algorithm(graph, dijkstra, graph.get_vertex(0), graph.get_vertex(33), mean_heuristic,
+                         "Box Roads Mean", "box_roads")
+    test_graph_algorithm(graph, dijkstra, graph.get_vertex(0), graph.get_vertex(33), deviation_heuristic,
+                         "Box Roads Deviation", "box_roads")
 
 
 def fix_box_roads():
