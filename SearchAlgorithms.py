@@ -18,7 +18,7 @@ def path_distance(graph, path):
     distance = 0
     current = len(path)-1
     while current != 0:
-        distance += graph.edges[(path[current], path[current-1])].weight
+        distance += graph.edges[(path[current], path[current-1])].get_distance()
         current -= 1
     return distance
 
