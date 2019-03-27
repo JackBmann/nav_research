@@ -3,7 +3,7 @@ Created By Michael Bolot and John (Jack) Baumann for Fall 2018 - Spring 2019 res
 """
 import networkx
 from sys import maxsize
-
+from random import choice
 
 class Graph:
     """
@@ -22,6 +22,7 @@ class Graph:
     current_node = 0
     optimal_color = 0  # 0 means the edge is on an optimal path, one means it is not
     edge_correlation = []
+    jams = set() # set of the jammed edges, for traffic model evaluation
 
     def __init__(self, edges, correlations=None):
         """
@@ -66,19 +67,7 @@ class Graph:
         else:
             self.edge_correlation = correlations
 
-        # after we have the correlations, update the edge weight to reflect this
-        '''
-        for edge in self.edges:
-            edge_obj = self.edges[edge]
-            corr = self.edge_correlation[edge_obj.get_identifier()]
-            self_total = 0
-            max_potential = 0
-            for value in corr:
-                max_potential += 1
-                self_total += value
-            edge_obj.weight = edge_obj.weight * ((self_total/max_potential)**-1)
-            print(edge_obj.weight)
-        '''
+        self.create_jams(int(len(self.edges) * 0.05)) # jam 5% of roads (rounded down)
 
     def create_edge_connections(self):
         """
@@ -261,6 +250,19 @@ class Graph:
                 distance = self.edges[edge].get_distance()
                 travel_time = distance / speed
                 self.edges[edge].set_average_time(travel_time)
+
+    def create_jam(self):
+        # this code found at: https://stackoverflow.com/questions/4859292/how-to-get-a-random-value-in-python-dictionary
+        vert_edge = choice(list(self.edges.keys()))
+        true_edge = self.edges[vert_edge]
+        while true_edge in self.jams:
+            vert_edge = choice(list(self.edges.keys()))
+            true_edge = self.edges[vert_edge]
+        self.jams.add(true_edge)
+
+    def create_jams(self, num_jams):
+        for i in range(num_jams):
+            self.create_jam()
 
     def clear_colors(self):
         """
