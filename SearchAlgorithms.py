@@ -80,7 +80,7 @@ def dijkstra(graph, src, dest, heuristic):
     :param graph: graph that will be used to find optimal path
     :param src: the source vertex to search from
     :param dest: the destination vertex to search to
-    :param heuristic: the heuristic function used as a weight. Returns 0 for djikstra's, and non-zero for a*
+    :param heuristic: the heuristic function used as a weight. Returns 0 for Djikstra's, and non-zero for a*
     :return: a list which is the optimal path
     """
     distance = {}  # the distance value of each vertex
@@ -113,14 +113,14 @@ def dijkstra(graph, src, dest, heuristic):
 
 def djikstra_heuristic(graph, src, dest, parents):
     """
-    Heuristic for djikstra's, just returns the edge between src and dest
+    Heuristic for Djikstra's, just returns the distance between src and dest
     :param graph: the graph
     :param src: source vertex
     :param dest: dest vertex
     :param parents: unused for this function; included so that the more sophisticated heuristics can also be passed
     :return: the edge weight between src and dest, a number (float)
     """
-    return graph.edges[(src, dest)].weight
+    return graph.edges[(src, dest)].get_distance()
 
 
 def a_star_heuristic(graph, src, dest, parents):
@@ -134,7 +134,7 @@ def a_star_heuristic(graph, src, dest, parents):
     :return: distance, a number (float) value that represents the distance between src and dest
     """
     distance = sqrt((src.get_latitude() - dest.get_latitude())**2 + (src.get_longitude() - dest.get_longitude())**2)
-    return distance + graph.edges[(src, dest)].weight
+    return distance
 
 
 def mean_heuristic(graph, src, dest, parents):
@@ -148,7 +148,7 @@ def mean_heuristic(graph, src, dest, parents):
     :param parents: the parents graph used to find the current edge that will be used for correlation matching
     :return: distance, a number (float) value that represents the distance between src and dest
     """
-    current_weight = graph.edges[(src, dest)].weight  # the current weight with no modification
+    current_weight = graph.edges[(src, dest)].get_distance()  # the current weight with no modification
     SPEED_THRESH = 0.15
     distance = 0
     if src not in parents:
@@ -175,9 +175,10 @@ def mean_heuristic(graph, src, dest, parents):
 
     return distance
 
+
 def deviation_heuristic(graph, src, dest, parents):
     """
-    Heurisitic functionality based on the std deviation and the mean (speed on both accounts)
+    Heuristic functionality based on the std deviation and the mean (speed on both accounts)
     Functions similarly to the mean heuristic until the end, where it looks at std_deviation
     :param graph: the graph for the function
     :param src: the src node (a vertex obj)
@@ -185,7 +186,7 @@ def deviation_heuristic(graph, src, dest, parents):
     :param parents: the parents graph used to find the current edge that will be used for correlation matching
     :return: distance, a number (float) that represents the distance between src and dest
     """
-    current_weight = graph.edges[(src, dest)].weight  # the current weight with no modification
+    current_weight = graph.edges[(src, dest)].get_distance()  # the current weight with no modification
     # arbitrarily defined constants
     SPEED_THRESH = 0.15
     DEV_THRESH = 0.05
@@ -223,8 +224,3 @@ def deviation_heuristic(graph, src, dest, parents):
         if current_edge.standard_deviation_speed < DEV_THRESH * average:
             distance *= REDUCE
     return distance
-
-
-
-# Turn everything into time
-# E(X2|X1):

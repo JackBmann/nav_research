@@ -58,6 +58,7 @@ class Graph:
         if self.positive_speed_limit():
             #  if we have at least one speed that we can expand off of, then extrapolate the speeds
             self.expand_speeds()
+            self.calculate_travel_times()
         if not correlations or len(correlations) == 0:
             self.edge_correlation = [[None for i in range(len(self.edges))]for j in range(len(self.edges))]  # first fill in the array for the entries
             # we will arbitrarily fill in the list, so it is necessary to have a properly filled array
@@ -124,8 +125,6 @@ class Graph:
                         distances[i][j] = distances[i][k] + distances[k][j]
         return distances
 
-
-
     def create_correlations(self):
         """
         Spreads the correlations out through the whole graph
@@ -140,13 +139,11 @@ class Graph:
             for other_edge in self.edges:
                 second_edge = self.edges[other_edge]
                 distance = distances[first_edge.get_identifier()][second_edge.get_identifier()]
-                if distance == None:
+                if not distance:
                     corr = 0
                 else:
                     corr = 0.9**float(distance)
                 self.edge_correlation[first_edge.get_identifier()][second_edge.get_identifier()] = corr
-
-
 
     def connected(self, src, dest):
         """
@@ -257,6 +254,14 @@ class Graph:
                             if self.edges[(second_vert, third_vert)].get_speed_limit() == 0:
                                 self.edges[(second_vert, third_vert)].speed_limit = current_limit
 
+    def calculate_travel_times(self):
+        for edge in self.edges:
+            if not self.edges[edge].get_average_time():
+                speed = self.edges[edge].get_speed_limit()
+                distance = self.edges[edge].get_distance()
+                travel_time = distance / speed
+                self.edges[edge].set_average_time(travel_time)
+
     def clear_colors(self):
         """
         clears the seen hash_table which marks nodes
@@ -288,8 +293,8 @@ class Graph:
             if (edge_obj.first_vertex, edge_obj.second_vertex) in self.edge_colors or \
                     (edge_obj.second_vertex, edge_obj.first_vertex) in self.edge_colors:
                 edge_color = 0
-            new_graph.add_edge(first_vertex, second_vertex, weight=edge_obj.weight, color=edge_color)
-            new_graph[first_vertex][second_vertex]['weight'] = edge_obj.weight
+            new_graph.add_edge(first_vertex, second_vertex, weight=edge_obj.distance, color=edge_color)
+            new_graph[first_vertex][second_vertex]['weight'] = edge_obj.distance
 
         return new_graph
 
@@ -512,7 +517,7 @@ class Edge:
     Edge object for use in the Graph
     :field first_vertex: The first vertex of the edge, a vertex object
     :field second_vertex: The second vertex of the edge, a vertex object
-    :field weight: the weight of the edge, an int/float
+    :field distance: the distance of the edge, an int/float
     :field speed_limit: the speed limit on this edge
     :field average_speed: the average speed of traffic across this edge
     :field standard_deviation_speed: the standard deviation of speeds across this edge
@@ -520,20 +525,20 @@ class Edge:
     identifier = None
     first_vertex = None
     second_vertex = None
-    weight = None
+    distance = None
     average_time = None
     standard_deviation_time = None
     speed_limit = None
     average_speed = None
     standard_deviation_speed = None
 
-    def __init__(self, first_vertex, second_vertex, weight, average_time=None, standard_deviation_time=None,
+    def __init__(self, first_vertex, second_vertex, distance, average_time=None, standard_deviation_time=None,
                  speed_limit=None, average_speed=None, standard_deviation_speed=None):
         """
         Constructor for the edge class
         :param first_vertex: The first vertex of the edge, a vertex object
         :param second_vertex: The second vertex of the edge, a vertex object
-        :param weight: the weight of the edge, an int/float
+        :param distance: the distance of the edge, an int/float
         :param average_time: the average total time to travel across this edge
         :param standard_deviation_time: the standard deviation of travel time across this edge
         :param speed_limit: the speed limit on this edge
@@ -545,7 +550,7 @@ class Edge:
         edge_identifier_iterator += 1
         self.first_vertex = first_vertex
         self.second_vertex = second_vertex
-        self.weight = weight
+        self.distance = distance
         self.average_time = average_time
         self.standard_deviation_time = standard_deviation_time
         self.speed_limit = speed_limit
@@ -572,8 +577,8 @@ class Edge:
     def get_second_vertex(self):
         return self.second_vertex
 
-    def get_weight(self):
-        return self.weight
+    def get_distance(self):
+        return self.distance
 
     def get_average_time(self):
         return self.average_time
@@ -590,8 +595,8 @@ class Edge:
     def get_standard_deviation_speed(self):
         return self.standard_deviation_speed
 
-    def set_weight(self, w):
-        self.weight = w
+    def set_distance(self, d):
+        self.distance = d
 
     def set_average_time(self, avg_time):
         self.average_time = avg_time
