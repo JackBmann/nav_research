@@ -224,3 +224,27 @@ def deviation_heuristic(graph, src, dest, parents):
         if current_edge.standard_deviation_speed < DEV_THRESH * average:
             distance *= REDUCE
     return distance
+
+
+def single_traffic_heuristic(graph, src, dest, parents):
+    """
+    A heuristic for just using traffic jams, correlations, and times to calculate a path
+    :param graph: the input graph
+    :param src: the source node
+    :param dest: the destination node
+    :param parents: the parents hash, unused
+    :return: distance, an int/float detailing the weight of the evaluated edge
+    """
+    distance = 0
+    true_edge = graph.edges[(src, dest)]
+    max_corr = 0
+    for jam in graph.jams:
+        # for each jam, see the correlation between the jammed edge and the evaluated edge
+        # then find the
+        jam_corr = graph.edge_correlation[true_edge.identifier][jam.identifier]
+        if jam_corr > max_corr:
+            max_corr = jam_corr
+    current_weight = true_edge.average_time
+    distance = (current_weight * max_corr) + current_weight
+    return distance
+
