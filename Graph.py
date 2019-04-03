@@ -20,7 +20,7 @@ class Graph:
     node_colors = {}
     edge_colors = {}
     current_node = 0
-    optimal_color = 0  # 0 means the edge is on an optimal path, one means it is not
+    optimal_color = 2  # 2 means the edge is on an optimal path, 1 means it is a jam, 0 means it is just an edge
     edge_correlation = []
     jams = set() # set of the jammed edges, for traffic model evaluation
 
@@ -171,21 +171,26 @@ class Graph:
             self.seen[vertex] = self.current_node
             self.current_node += 1
 
-    def color_graph(self, path):
+    def color_graph(self, paths):
         """
         Colors a graph's edges and vertices
-        :param path: the optimal path to be highlighted in the display
+
+        :param paths: the optimal paths to be highlighted in the display (list of lists)
         :return: void, all changes will be made to structures in the graph object
         """
         self.node_colors = self.seen  # seen already contains information that can be used to color the nodes
-        if len(path) < 2:
-            # if the path doesn't have at least 2 nodes, it is maleformed
-            return
-        current_edge = (path[0], path[1])
-        self.edge_colors[current_edge] = self.optimal_color
-        for i in range(2, len(path)):
-            current_edge = (current_edge[1], path[i])
+        for j in range(len(paths)):
+            path = paths[j]
+            if len(path) < 2:
+                # if the path doesn't have at least 2 nodes, it is maleformed
+                continue
+            current_edge = (path[0], path[1])
             self.edge_colors[current_edge] = self.optimal_color
+            for i in range(2, len(path)):
+                current_edge = (current_edge[1], path[i])
+                self.edge_colors[current_edge] = self.optimal_color + j
+        for jam in self.jams:
+            self.edge_colors[jam.get_first_vertex(), jam.get_second_vertex()] = 1
 
     def zero_speed_limit(self):
         """
@@ -275,11 +280,9 @@ class Graph:
         self.optimal_color = 0
         self.current_node = 0
 
-    def convert_networkx(self, paths=[]):
+    def convert_networkx(self):
         """
         Converts a graph into a networkx graph
-        0 if not in path, 1 if in jam, 2/etc. if in path
-        :param path: a list of passed in paths
         :return: A networkx graph object
         """
         new_graph = networkx.DiGraph()
@@ -288,58 +291,20 @@ class Graph:
             node_color = 0
             if vertex_obj in self.node_colors:
                 node_color = self.node_colors[vertex_obj]
-            if len(paths) > 0:
-                node_color = 0
             new_graph.add_node((vertex_obj.get_latitude(), vertex_obj.get_longitude()), color=node_color)
         for edge in self.edges:
             edge_obj = self.edges[edge]
             first_vertex = (edge_obj.first_vertex.get_latitude(), edge_obj.first_vertex.get_longitude())
             second_vertex = (edge_obj.second_vertex.get_latitude(), edge_obj.second_vertex.get_longitude())
-            edge_color = 1
-            if (edge_obj.first_vertex, edge_obj.second_vertex) in self.edge_colors or \
-                    (edge_obj.second_vertex, edge_obj.first_vertex) in self.edge_colors:
-                edge_color = 0
-            if len(paths) > 0:
-                # if we have paths, then make path colorations
-                edge_color = 0
-                if edge_obj in self.jams:
-                    # if we are jammed, then override any other coloring for jam coloring
-                    edge_color = 1
-                else:
-                    path_idx = -1 # set to -1 for checking of containment
-                    for i in range(len(paths)):
-                        if self.edge_in_path(edge, paths[i]):
-                            path_idx = i
-                            break
-                    # if we are in a path, then find out which and increment by 2 (since 0 and 1 are reserved colors)
-                    if path_idx != -1:
-                        edge_color = path_idx + 2
-
+            edge_color = 0
+            if (edge_obj.first_vertex, edge_obj.second_vertex) in self.edge_colors:
+                edge_color = self.edge_colors[edge[0], edge[1]]
+            elif (edge_obj.second_vertex, edge_obj.first_vertex) in self.edge_colors:
+                edge_color = self.edge_colors[edge[1], edge[0]]
             new_graph.add_edge(first_vertex, second_vertex, weight=edge_obj.distance, color=edge_color)
             new_graph[first_vertex][second_vertex]['weight'] = edge_obj.distance
 
         return new_graph
-
-    def edge_in_path(self, edge, path):
-        """
-        helper method for networkx convert
-        determines if a given edge is in a path consisting of node-node connections
-        :param edge: the considered edge (pair of vertexes)
-        :param path: the path, an ordered list of vertices
-        :return: boolean, true or false
-        """
-        if edge[0] in path:
-            start = path.index(edge[0])
-            if start != 0:
-                end = start - 1
-                if path[end] == edge[1]:
-                    return True
-            if start != len(path)-1:
-                end = start + 1
-                if path[end] == edge[1]:
-                    return True
-        return False
-
 
     @staticmethod
     def networkx_convert(graph):
