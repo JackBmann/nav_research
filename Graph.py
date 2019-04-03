@@ -179,6 +179,8 @@ class Graph:
         :return: void, all changes will be made to structures in the graph object
         """
         self.node_colors = self.seen  # seen already contains information that can be used to color the nodes
+        if len(paths > 1):
+            self.node_colors = {}
         for j in range(len(paths)):
             path = paths[j]
             if len(path) < 2:
