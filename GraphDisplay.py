@@ -63,9 +63,21 @@ def draw_graph(graph, title, filename):
     for edge in g.edges(data=True):
         x0, y0 = edge[0]
         x1, y1 = edge[1]
+        jam_or_path = edge[2].get('color')
+        # No Jam, no path
         color = 'black'
-        if edge[2].get('color') == 0:
+        # If an edge is jammed it is colored red
+        if jam_or_path == 1:
             color = 'red'
+        # Path 1, 2, 3, 4 all have different colored edges
+        elif jam_or_path == 2:
+            color = 'green'
+        elif jam_or_path == 3:
+            color = 'blue'
+        elif jam_or_path == 4:
+            color = 'yellow'
+        elif jam_or_path == 5:
+            color = 'purple'
         weight = "Edge Weight: " + str(edge[2].get('weight'))
         edge_trace.append(go.Scatter(
             x=[x0, x1],

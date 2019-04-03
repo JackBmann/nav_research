@@ -5,6 +5,7 @@ import networkx
 from sys import maxsize
 from random import choice
 
+
 class Graph:
     """
     Graph Class
@@ -22,7 +23,7 @@ class Graph:
     current_node = 0
     optimal_color = 2  # 2 means the edge is on an optimal path, 1 means it is a jam, 0 means it is just an edge
     edge_correlation = []
-    jams = set() # set of the jammed edges, for traffic model evaluation
+    jams = set()    # set of the jammed edges, for traffic model evaluation
 
     def __init__(self, edges, correlations=None):
         """
@@ -174,17 +175,16 @@ class Graph:
     def color_graph(self, paths):
         """
         Colors a graph's edges and vertices
-
         :param paths: the optimal paths to be highlighted in the display (list of lists)
         :return: void, all changes will be made to structures in the graph object
         """
         self.node_colors = self.seen  # seen already contains information that can be used to color the nodes
-        if len(paths > 1):
+        if len(paths) > 1:
             self.node_colors = {}
         for j in range(len(paths)):
             path = paths[j]
             if len(path) < 2:
-                # if the path doesn't have at least 2 nodes, it is maleformed
+                # if the path doesn't have at least 2 nodes, it is malformed
                 continue
             current_edge = (path[0], path[1])
             self.edge_colors[current_edge] = self.optimal_color

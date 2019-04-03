@@ -1,5 +1,6 @@
 from Graph import Graph, Vertex, Edge
-from SearchAlgorithms import dfs, dijkstra, djikstra_heuristic, a_star_heuristic, mean_heuristic, deviation_heuristic
+from SearchAlgorithms import dfs, dijkstra, djikstra_heuristic, a_star_heuristic, \
+    mean_heuristic, deviation_heuristic, single_traffic_heuristic
 from GraphDisplay import draw_graph
 from networkx import read_shp
 from OSMParser import parse_osm
@@ -44,9 +45,7 @@ def print_graph(graph):
     print("Graph Correlations:       ", graph.edge_correlation)
 
 
-def test_graph_algorithm(graph, algorithm, src, dest, heuristic, name, filename):
-    graph.clear_colors()
-    print_graph(graph)
+def test_graph_algorithm(graph, algorithm, src, dest, heuristic, name):
     start = datetime.now()
     if heuristic:
         path = algorithm(graph, src, dest, heuristic)
@@ -60,24 +59,31 @@ def test_graph_algorithm(graph, algorithm, src, dest, heuristic, name, filename)
         path_str += ", " + str(entry)
     print('{:<15}'.format(name) + " (" + '{:0>5}:{:0>6}'.format(str(delta.seconds), str(delta.microseconds)) +
           " seconds): ", path_str)
-    graph.color_graph(path)
+    return path
+
+
+def color_convert_draw_graph(graph, paths, name, filename):
+    graph.color_graph(paths)
     networkx_graph = graph.convert_networkx()
     draw_graph(networkx_graph, name, filename)
 
 
-def test_dfs(graph):
-    test_graph_algorithm(graph, dfs, graph.get_vertex(0), graph.get_vertex(8), None,
-                         "Depth First Search", "dfs")
+def test_dfs(graph, start, end):
+    paths = [test_graph_algorithm(graph, dfs, start, end, None, "Depth First Search")]
+    color_convert_draw_graph(graph, paths, "Depth First Search", "dfs")
+    graph.clear_colors()
 
 
-def test_dijkstra(graph):
-    test_graph_algorithm(graph, dijkstra, graph.get_vertex(0), graph.get_vertex(8), djikstra_heuristic,
-                         "Dijkstra", "dijkstra")
+def test_dijkstra(graph, start, end):
+    paths = [test_graph_algorithm(graph, dijkstra, start, end, djikstra_heuristic, "Dijkstra")]
+    color_convert_draw_graph(graph, paths, "Dijkstra", "dijkstra")
+    graph.clear_colors()
 
 
-def test_a_star(graph):
-    test_graph_algorithm(graph, dijkstra, graph.get_vertex(0), graph.get_vertex(8), a_star_heuristic,
-                         "A*", "a_star")
+def test_a_star(graph, start, end):
+    paths = [test_graph_algorithm(graph, dijkstra, start, end, a_star_heuristic, "A*")]
+    color_convert_draw_graph(graph, paths, "A*", "a_star")
+    graph.clear_colors()
 
 
 def test_parse_osm(osm_path):
@@ -87,33 +93,34 @@ def test_parse_osm(osm_path):
     draw_graph(networkx_graph, "OSM Campus", "osm_campus")
 
 
-def test_osm_dfs(graph):
-    test_graph_algorithm(graph, dfs, graph.get_vertex(list(graph.vertices.keys())[0]),
-                         graph.get_vertex(list(graph.vertices.keys())[47]), None,
-                         "OSM DFS", "osm_dfs")
+def test_osm_dfs(graph, start, end):
+    paths = [test_graph_algorithm(graph, dfs, start, end, None, "OSM DFS")]
+    color_convert_draw_graph(graph, paths, "OSM DFS", "osm_dfs")
+    graph.clear_colors()
 
 
-def test_osm_dijkstra(graph):
-    test_graph_algorithm(graph, dijkstra, graph.get_vertex(list(graph.vertices.keys())[0]),
-                         graph.get_vertex(list(graph.vertices.keys())[47]), djikstra_heuristic,
-                         "OSM Dijkstra", "osm_dijkstra")
+def test_osm_dijkstra(graph, start, end):
+    paths = [test_graph_algorithm(graph, dijkstra, start, end, djikstra_heuristic, "OSM Dijkstra")]
+    color_convert_draw_graph(graph, paths, "OSM Dijkstra", "osm_dijkstra")
+    graph.clear_colors()
 
 
-def test_osm_a_star(graph):
-    test_graph_algorithm(graph, dijkstra, graph.get_vertex(list(graph.vertices.keys())[0]),
-                         graph.get_vertex(list(graph.vertices.keys())[47]), a_star_heuristic,
-                         "OSM A*", "osm_a_star")
+def test_osm_a_star(graph, start, end):
+    paths = [test_graph_algorithm(graph, dijkstra, start, end, a_star_heuristic, "OSM A*")]
+    color_convert_draw_graph(graph, paths, "OSM A*", "osm_a_star")
+    graph.clear_colors()
 
 
 def test_box_roads():
     graph = Graph.read_graph("BoxRoads.txt")
     print_graph(graph)
-    test_graph_algorithm(graph, dijkstra, graph.get_vertex(0), graph.get_vertex(33), a_star_heuristic,
-                         "Box Roads A*", "box_roads")
-    test_graph_algorithm(graph, dijkstra, graph.get_vertex(0), graph.get_vertex(33), mean_heuristic,
-                         "Box Roads Mean", "box_roads")
-    test_graph_algorithm(graph, dijkstra, graph.get_vertex(0), graph.get_vertex(33), deviation_heuristic,
-                         "Box Roads Deviation", "box_roads")
+    start = graph.get_vertex(0)
+    end = graph.get_vertex(33)
+    paths = [test_graph_algorithm(graph, dijkstra, start, end, a_star_heuristic, "Box Roads A*"),
+             test_graph_algorithm(graph, dijkstra, start, end, mean_heuristic, "Box Roads Mean"),
+             test_graph_algorithm(graph, dijkstra, start, end, deviation_heuristic, "Box Roads Deviation"),
+             test_graph_algorithm(graph, dijkstra, start, end, single_traffic_heuristic, "Box Roads Deviation")]
+    color_convert_draw_graph(graph, paths, "Box Roads", "box_roads")
 
 
 def fix_box_roads():
@@ -147,12 +154,21 @@ def fix_box_roads():
 
 
 # test_graph = get_test_graph()
-# test_dfs(test_graph)
-# test_dijkstra(test_graph)
-# test_a_star(test_graph)
+# print_graph(graph)
+# start = graph.get_vertex(0)
+# end = graph.get_vertex(8)
+# test_dfs(test_graph, start, end)
+# test_dijkstra(test_graph, start, end)
+# test_a_star(test_graph, start, end)
+
 # test_parse_osm('shapefiles/OSMCampus.osm')
+
 # osm_graph = parse_osm('shapefiles/OSMCampus.osm')
-# test_osm_dfs(osm_graph)
-# test_osm_dijkstra(osm_graph)
-# test_osm_a_star(osm_graph)
+# print_graph(graph)
+# start = graph.get_vertex(list(graph.vertices.keys())[0])
+# end = graph.get_vertex(list(graph.vertices.keys())[47])
+# test_osm_dfs(osm_graph, start, end)
+# test_osm_dijkstra(osm_graph, start, end)
+# test_osm_a_star(osm_graph, start, end)
+
 test_box_roads()

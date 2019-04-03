@@ -29,7 +29,7 @@ def reconstruct_path(parents, src, dest):
     :param parents: A dictionary of a vertex mapped to its optimal parent node
     :param src: the source vertex for the path
     :param dest: the destination vertex for the path
-    :return: path, a list of the verticies in order
+    :return: path, a list of the vertices in order
     """
     path = []
     added = dest
