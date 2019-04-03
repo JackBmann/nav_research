@@ -301,6 +301,7 @@ class Graph:
                 edge_color = 0
             if len(paths) > 0:
                 # if we have paths, then make path colorations
+                edge_color = 0
                 if edge_obj in self.jams:
                     # if we are jammed, then override any other coloring for jam coloring
                     edge_color = 1
