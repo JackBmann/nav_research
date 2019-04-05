@@ -171,4 +171,4 @@ def draw_graph(graph, title, filename):
                         xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
                         yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)))
 
-    plotly.offline.plot(fig, filename=filename+'.html')
+    plotly.offline.plot(fig, filename='./graph_displays/generated/'+filename+'.html')

@@ -3,4 +3,4 @@
 
 __pycache__/
 
-*.html
+/graph_displays/generated/*.html
