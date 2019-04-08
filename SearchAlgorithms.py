@@ -5,6 +5,7 @@ Designed to house the search algorithms to be used on the graph
 from queue import PriorityQueue
 from sys import maxsize
 from math import sqrt
+from scipy.stats import norm
 
 
 def path_distance(graph, path):
@@ -248,6 +249,7 @@ def single_traffic_heuristic(graph, src, dest, parents):
     distance = (current_weight * max_corr) + current_weight
     return distance
 
+
 def normal_dist_traffic(graph, src, dest, parents):
     """
     Heuristic that uses a normal distribution to determine the probability that a route will take you to a
@@ -272,7 +274,7 @@ def normal_dist_traffic(graph, src, dest, parents):
         else:
             current = None
 
-    path = path[::-1] # reverse the path for ease of traversal
+    path = path[::-1]   # reverse the path for ease of traversal
     normal_mean = 0
     normal_var = 0
     edges = []
@@ -288,3 +290,8 @@ def normal_dist_traffic(graph, src, dest, parents):
             normal_var += (2 * start_edge.standard_deviation_time * end_edge.standard_deviation_time *
                            graph.edge_correlation[start_edge.identifier][end_edge.identifier])
     normal_var = sqrt(normal_var)
+
+    # Get the probability that this route meets the deadline using the probability density function (PDF) of the
+    # normal distribution of normal_mean and normal_var
+    p = norm(loc=normal_mean, scale=normal_var).pdf(graph.deadline)
+    
