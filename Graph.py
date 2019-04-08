@@ -90,6 +90,7 @@ class Graph:
                 if connected_edge.identifier not in connections:
                     connections[connected_edge.identifier] = set()
                 connections[connected_edge.identifier].add(edge_obj.identifier)
+        print(max(connections), len(self.edges))
         return connections
 
     def edge_distance(self):
