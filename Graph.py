@@ -24,12 +24,15 @@ class Graph:
     optimal_color = 2  # 2 means the edge is on an optimal path, 1 means it is a jam, 0 means it is just an edge
     edge_correlation = []
     jams = set()    # set of the jammed edges, for traffic model evaluation
+    deadline = None
 
-    def __init__(self, edges, correlations=None):
+    def __init__(self, edges, correlations=None, deadline=None):
         """
         Constructor for the Graph Class
         Currently are bidirectional paths
         :param edges: A list of edges in the graph
+        :param correlations: the correlations which could be passed in
+        :param deadline: the deadline for the graph algorithm, used by one particular heuristic
         """
 
         # first, reset any coloring or edge_identifiers that are left over
@@ -37,6 +40,9 @@ class Graph:
         self.clear_colors()
         edge_identifier_iterator = 0
         self.jams = set()
+
+        if deadline:
+            self.deadline = deadline
 
         vertices = {}
         connections = {}

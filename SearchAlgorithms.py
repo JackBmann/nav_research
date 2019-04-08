@@ -248,3 +248,43 @@ def single_traffic_heuristic(graph, src, dest, parents):
     distance = (current_weight * max_corr) + current_weight
     return distance
 
+def normal_dist_traffic(graph, src, dest, parents):
+    """
+    Heuristic that uses a normal distribution to determine the probability that a route will take you to a
+    given destination in the time allotted (business logic overview)
+    :param graph: the graph to be used by the algorithm
+    :param src: the source node for the newly evaluated edge
+    :param dest: the destination node for the newly evaluated edge
+    :param parents: the parents graph which allows the route's normal distribution to be created
+    :return: distance, a numerical (int/double) value representing the weight of the newly evaluated edge
+    """
+    current = None
+    # if we have no parents, then just proceed as normal
+    if src in parents:
+        current = parents[src]
+    else:
+        return graph.edges[(src, dest)].weight
+    path = [src]
+    while current:
+        path.append(current)
+        if current in parents:
+            current = parents[current]
+        else:
+            current = None
+
+    path = path[::-1] # reverse the path for ease of traversal
+    normal_mean = 0
+    normal_var = 0
+    edges = []
+    for i in range(1, len(path)):
+        edge = graph.edges[(path[i-1], path[i])]
+        normal_mean += edge.average_time
+        edges.append(edge)
+    for i in range(len(edges)):
+        start_edge = edges[i]
+        normal_var += (start_edge.standard_deviation_time ** 2)
+        for j in range(i, len(edges)):
+            end_edge = edges[j]
+            normal_var += (2 * start_edge.standard_deviation_time * end_edge.standard_deviation_time *
+                           graph.edge_correlation[start_edge.identifier][end_edge.identifier])
+    normal_var = sqrt(normal_var)
