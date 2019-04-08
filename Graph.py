@@ -31,6 +31,12 @@ class Graph:
         Currently are bidirectional paths
         :param edges: A list of edges in the graph
         """
+
+        # first, reset any coloring or edge_identifiers that are left over
+        global edge_identifier_iterator
+        self.clear_colors()
+        edge_identifier_iterator = 0
+
         vertices = {}
         connections = {}
         parsed_edges = {}

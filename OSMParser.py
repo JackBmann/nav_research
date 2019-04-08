@@ -180,5 +180,4 @@ def parse_osm(path):
             # Iterate through the tags of each relation to parse its associated metadata
             # for tag in tags:
             #     print(tag.tag, tag.attrib)
-
     return Graph(edges)
