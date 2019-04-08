@@ -241,7 +241,6 @@ def single_traffic_heuristic(graph, src, dest, parents):
     for jam in graph.jams:
         # for each jam, see the correlation between the jammed edge and the evaluated edge
         # looking for the maximum jam
-        print(true_edge.identifier, jam.identifier)
         jam_corr = graph.edge_correlation[true_edge.identifier][jam.identifier]
         if jam_corr > max_corr:
             max_corr = jam_corr
