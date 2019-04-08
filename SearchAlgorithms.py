@@ -258,14 +258,14 @@ def normal_dist_traffic(graph, src, dest, parents):
     :param src: the source node for the newly evaluated edge
     :param dest: the destination node for the newly evaluated edge
     :param parents: the parents graph which allows the route's normal distribution to be created
-    :return: distance, a numerical (int/double) value representing the weight of the newly evaluated edge
+    :return: total_weight, a numerical (int/double) value representing the weight of the newly evaluated edge
     """
     current = None
     # if we have no parents, then just proceed as normal
     if src in parents:
         current = parents[src]
     else:
-        return graph.edges[(src, dest)].weight
+        return graph.edges[(src, dest)].get_average_time()
     path = [src]
     while current:
         path.append(current)
@@ -294,4 +294,6 @@ def normal_dist_traffic(graph, src, dest, parents):
     # Get the probability that this route meets the deadline using the probability density function (PDF) of the
     # normal distribution of normal_mean and normal_var
     p = norm(loc=normal_mean, scale=normal_var).pdf(graph.deadline)
-    
+    total_weight = graph.edges[(src,dest)].get_average_time
+    total_weight += total_weight * (1-p)
+    return total_weight
