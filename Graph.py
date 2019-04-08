@@ -36,6 +36,7 @@ class Graph:
         global edge_identifier_iterator
         self.clear_colors()
         edge_identifier_iterator = 0
+        self.jams = set()
 
         vertices = {}
         connections = {}
