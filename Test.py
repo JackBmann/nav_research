@@ -91,6 +91,7 @@ def test_parse_osm(osm_path):
     graph = parse_osm(osm_path)
     networkx_graph = graph.convert_networkx()
     draw_graph(networkx_graph, "OSM Campus", "osm_campus")
+    return graph
 
 
 def test_osm_dfs(graph, start, end):
@@ -161,9 +162,7 @@ test_dfs(test_graph, start, end)
 test_dijkstra(test_graph, start, end)
 test_a_star(test_graph, start, end)
 
-test_parse_osm('shapefiles/OSMCampus.osm')
-
-osm_graph = parse_osm('shapefiles/OSMCampus.osm')
+osm_graph = test_parse_osm('shapefiles/OSMCampus.osm')
 print_graph(osm_graph)
 start = osm_graph.get_vertex(list(osm_graph.vertices.keys())[0])
 end = osm_graph.get_vertex(list(osm_graph.vertices.keys())[47])
