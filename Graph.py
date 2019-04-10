@@ -278,6 +278,7 @@ class Graph:
         while true_edge in self.jams:
             vert_edge = choice(list(self.edges.keys()))
             true_edge = self.edges[vert_edge]
+        true_edge.average_time *= 2
         self.jams.add(true_edge)
 
     def create_jams(self, num_jams):
