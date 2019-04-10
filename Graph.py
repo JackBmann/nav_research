@@ -292,7 +292,7 @@ class Graph:
         self.seen = {}
         self.edge_colors = {}
         self.node_colors = {}
-        self.optimal_color = 0
+        self.optimal_color = 2
         self.current_node = 0
 
     def convert_networkx(self):
