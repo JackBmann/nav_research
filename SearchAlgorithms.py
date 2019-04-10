@@ -76,17 +76,19 @@ def dfs(graph, src, dest):
     return best_path
 
 
-def dijkstra(graph, src, dest, heuristic):
+def dijkstra(graph, src, dest, heuristic, deadline=None):
     """
     :param graph: graph that will be used to find optimal path
     :param src: the source vertex to search from
     :param dest: the destination vertex to search to
     :param heuristic: the heuristic function used as a weight. Returns 0 for Djikstra's, and non-zero for a*
+    :param deadline: the target deadline value used in heuristic functions
     :return: a list which is the optimal path
     """
     distance = {}  # the distance value of each vertex
     parents = {}  # the parent of each vertex, with respect to optimal path
     q = PriorityQueue()
+    graph.set_deadline(deadline)
     for vertex in graph.vertices:
         added_vertex = graph.vertices[vertex]
         if added_vertex == src:
@@ -294,6 +296,6 @@ def normal_dist_traffic(graph, src, dest, parents):
     # Get the probability that this route meets the deadline using the probability density function (PDF) of the
     # normal distribution of normal_mean and normal_var
     p = norm(loc=normal_mean, scale=normal_var).pdf(graph.deadline)
-    total_weight = graph.edges[(src,dest)].get_average_time
+    total_weight = graph.edges[(src, dest)].get_average_time()
     total_weight += total_weight * (1-p)
     return total_weight

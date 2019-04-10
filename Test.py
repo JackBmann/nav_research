@@ -1,6 +1,6 @@
 from Graph import Graph, Vertex, Edge
 from SearchAlgorithms import dfs, dijkstra, djikstra_heuristic, a_star_heuristic, \
-    mean_heuristic, deviation_heuristic, single_traffic_heuristic
+    mean_heuristic, deviation_heuristic, single_traffic_heuristic, normal_dist_traffic
 from GraphDisplay import draw_graph
 from networkx import read_shp
 from OSMParser import parse_osm
@@ -45,10 +45,10 @@ def print_graph(graph):
     print("Graph Correlations:       ", graph.edge_correlation)
 
 
-def test_graph_algorithm(graph, algorithm, src, dest, heuristic, name):
+def test_graph_algorithm(graph, algorithm, src, dest, heuristic, name, deadline=None):
     start = datetime.now()
     if heuristic:
-        path = algorithm(graph, src, dest, heuristic)
+        path = algorithm(graph, src, dest, heuristic, deadline=deadline)
     else:
         path = algorithm(graph, src, dest)
     end = datetime.now()
@@ -118,40 +118,11 @@ def test_box_roads():
     start = graph.get_vertex(0)
     end = graph.get_vertex(33)
     paths = [test_graph_algorithm(graph, dijkstra, start, end, a_star_heuristic, "Box Roads A*"),
-             test_graph_algorithm(graph, dijkstra, start, end, mean_heuristic, "Box Roads Mean"),
-             test_graph_algorithm(graph, dijkstra, start, end, deviation_heuristic, "Box Roads Deviation"),
-             test_graph_algorithm(graph, dijkstra, start, end, single_traffic_heuristic, "Box Roads Deviation")]
+             # test_graph_algorithm(graph, dijkstra, start, end, mean_heuristic, "Box Roads Mean"),
+             # test_graph_algorithm(graph, dijkstra, start, end, deviation_heuristic, "Box Roads Deviation"),
+             # test_graph_algorithm(graph, dijkstra, start, end, single_traffic_heuristic, "Box Roads Deviation")
+             test_graph_algorithm(graph, dijkstra, start, end, normal_dist_traffic, "Box Roads Normal Dist", 500)]
     color_convert_draw_graph(graph, paths, "Box Roads", "box_roads")
-
-
-def fix_box_roads():
-    with open("BoxRoads.txt", 'r') as openFile:
-        with open("ModBoxRoads.txt", 'w') as writeFile:
-            vert_flag = 0
-            edge_flag = 0
-            for line in openFile:
-                if line == '\n':
-                    writeFile.write(line)
-                    continue
-                line = line.strip()
-                if line == "VERTICES":
-                    writeFile.write(line + '\n')
-                    vert_flag = 1
-                    continue
-                if line == "EDGES":
-                    writeFile.write(line + '\n')
-                    vert_flag = 0
-                    edge_flag = 1
-                    continue
-                if vert_flag > 0:
-                    parsed = line.split(',')
-                    p_line = str(int(parsed[0]) - 1) + ',' + parsed[1] + ',' + parsed[2] + '\n'
-                    writeFile.write(p_line)
-
-                if edge_flag > 0:
-                    parsed = line.split(',')
-                    p_line = str(int(parsed[0]) - 1) + ',' + str(int(parsed[1]) - 1) + ',' + parsed[2] + '\n'
-                    writeFile.write(p_line)
 
 
 # test_graph = get_test_graph()

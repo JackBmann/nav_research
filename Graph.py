@@ -392,9 +392,9 @@ class Graph:
 
                 if edge_flag == 1:
                     #  if we are in the edges block, read in the edges
-                    parsed_line = tuple(map(int, line.split(",")))
+                    parsed_line = tuple(map(float, line.split(",")))
                     num_data = len(parsed_line)
-                    edge = Edge(vertices[parsed_line[0]], vertices[parsed_line[1]], parsed_line[2])
+                    edge = Edge(vertices[int(parsed_line[0])], vertices[int(parsed_line[1])], parsed_line[2])
                     if num_data > 3:
                         edge.set_average_time(parsed_line[3])
                     if num_data > 4:
@@ -472,6 +472,12 @@ class Graph:
         :return: an int, the number of vertices
         """
         return max(self.vertices.keys()) + 1
+
+    def set_deadline(self, d):
+        """
+        Set the target deadline value of the Graph to be used in Dijkstra heuristics like normal_dist_traffic heuristic
+        """
+        self.deadline = d
 
 
 class Vertex:
