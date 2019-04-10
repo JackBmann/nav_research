@@ -260,7 +260,7 @@ def normal_dist_traffic(graph, src, dest, parents):
     :param src: the source node for the newly evaluated edge
     :param dest: the destination node for the newly evaluated edge
     :param parents: the parents graph which allows the route's normal distribution to be created
-    :return: total_weight, a numerical (int/double) value representing the weight of the newly evaluated edge
+    :return: total_weight a numerical (int/double) value representing the weight of the newly evaluated edge
     """
     current = None
     # if we have no parents, then just proceed as normal
