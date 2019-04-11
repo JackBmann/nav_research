@@ -120,8 +120,8 @@ def test_box_roads():
     paths = [test_graph_algorithm(graph, dijkstra, start, end, a_star_heuristic, "Box Roads A*"),
              # test_graph_algorithm(graph, dijkstra, start, end, mean_heuristic, "Box Roads Mean"),
              # test_graph_algorithm(graph, dijkstra, start, end, deviation_heuristic, "Box Roads Deviation"),
-             # test_graph_algorithm(graph, dijkstra, start, end, single_traffic_heuristic, "Box Roads Deviation")
-             test_graph_algorithm(graph, dijkstra, start, end, normal_dist_traffic, "Box Roads Normal Dist", 500)]
+             test_graph_algorithm(graph, dijkstra, start, end, single_traffic_heuristic, "Box Roads Deviation"),
+             test_graph_algorithm(graph, dijkstra, start, end, normal_dist_traffic, "Box Roads Normal Dist", 100)]
     color_convert_draw_graph(graph, paths, "Box Roads", "box_roads")
 
 

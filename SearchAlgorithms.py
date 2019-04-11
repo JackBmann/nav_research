@@ -128,7 +128,7 @@ def djikstra_heuristic(graph, src, dest, parents):
 
 def a_star_heuristic(graph, src, dest, parents):
     """
-    Heuristic function for a*
+    Heuristic function for A*
     Currently just calculates the euclidean distance between src and dest to inform its decision
     :param graph: The graph for the function, not used
     :param src: the source vertex (a vertex object)
@@ -296,6 +296,7 @@ def normal_dist_traffic(graph, src, dest, parents):
     # Get the probability that this route meets the deadline using the probability density function (PDF) of the
     # normal distribution of normal_mean and normal_var
     p = norm(loc=normal_mean, scale=normal_var).pdf(graph.deadline)
-    total_weight = graph.edges[(src, dest)].get_average_time()
-    total_weight += total_weight * (1-p)
+    # total_weight = graph.edges[(src, dest)].get_average_time()
+    # total_weight += total_weight * (1-p)
+    total_weight = 1 - p
     return total_weight
