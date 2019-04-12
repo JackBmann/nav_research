@@ -271,6 +271,47 @@ class Graph:
                 travel_time = distance / speed
                 self.edges[edge].set_average_time(travel_time)
 
+    def clear_jams(self):
+        """
+        Clears all active jams
+        :return: None
+        """
+        remove_list = [] # can't change set size during iteration, so need a holder
+        for jam in self.jams:
+            remove_list.append(jam)
+            jam.average_time /= 2
+
+        for edge in remove_list:
+            self.jams.remove(edge)
+
+    def specify_jams(self, coords):
+        """
+        Jams specific edges specified in coords
+        Will remove all other jams
+        :param coords: the list of ((x1, x2) ,(y1,y2)) pairs where x1 and x2 / y1 and y2 are coordinates of vertices
+        :return: None
+        """
+        self.clear_jams()
+        for implicit_edge in coords:
+            implicit_s_vert = implicit_edge[0]
+            implicit_e_vert = implicit_edge[1]
+            s_vert = None
+            e_vert = None
+            for vert in self.vertices:
+                vert_obj = self.vertices[vert]
+                if vert_obj.get_latitude == implicit_s_vert[0] and vert_obj.get_latitude == implicit_s_vert[1]:
+                    s_vert = vert_obj
+                elif vert_obj.get_latitude == implicit_s_vert[0] and vert_obj.get_latitude == implicit_s_vert[1]:
+                    e_vert = vert_obj
+
+                if s_vert and e_vert:
+                    break
+            if not s_vert or not e_vert:
+                print("One or more Vertices was not valid try again")
+                return
+            edge_obj = self.edges[(s_vert, e_vert)]
+            self.jam_edge(edge_obj)
+
     def create_jam(self):
         # this code found at: https://stackoverflow.com/questions/4859292/how-to-get-a-random-value-in-python-dictionary
         vert_edge = choice(list(self.edges.keys()))
@@ -278,8 +319,16 @@ class Graph:
         while true_edge in self.jams:
             vert_edge = choice(list(self.edges.keys()))
             true_edge = self.edges[vert_edge]
-        true_edge.average_time *= 2
-        self.jams.add(true_edge)
+        self.jam_edge(true_edge)
+
+    def jam_edge(self, edge):
+        """
+        Jams an individual Edge
+        :param edge: the edge to be jammed
+        :return: None
+        """
+        edge.average_time *= 2
+        self.jams.add(edge)
 
     def create_jams(self, num_jams):
         for i in range(num_jams):

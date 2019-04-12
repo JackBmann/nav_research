@@ -135,6 +135,7 @@ def draw_graph(graph, title, filename):
         else:
             done.add(identifier)
         node_info += str(identifier)
+        '''
         node_info += ": connected to "
         for item in adjacencies[1]:
             node_number = ""
@@ -147,6 +148,8 @@ def draw_graph(graph, title, filename):
             node_info += str(node_number)
             node_info += ", "
         node_info = node_info[:-2]
+        '''
+        node_info += " is at: " + str(n[0]) + "," + str(n[1])
         # change color stuff
         node_trace['marker']['color'] += tuple([g.nodes[n]['color']])
         #  node_info = '# of connections: ' + str(len(adjacencies[1]))
