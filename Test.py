@@ -125,6 +125,11 @@ def test_box_roads():
     color_convert_draw_graph(graph, paths, "Box Roads", "box_roads")
 
 
+def parse_and_prepare_downtown():
+    Graph = parse_osm('shapefiles/DowntownDallas.osm')
+    Graph.write_graph('DowntownDallas.txt')
+
+
 # test_graph = get_test_graph()
 # print_graph(test_graph)
 # start = test_graph.get_vertex(0)
@@ -141,4 +146,5 @@ def test_box_roads():
 # test_osm_dijkstra(osm_graph, start, end)
 # test_osm_a_star(osm_graph, start, end)
 
-test_box_roads()
+# test_box_roads()
+parse_and_prepare_downtown()
