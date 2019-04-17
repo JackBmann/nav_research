@@ -126,8 +126,11 @@ def test_box_roads():
 
 
 def parse_and_prepare_downtown():
-    Graph = parse_osm('shapefiles/DowntownDallas.osm')
-    Graph.write_graph('DowntownDallas.txt')
+    g = read_shp('shapefiles/DowntownDallas.shp', False)
+    # graph = parse_osm('shapefiles/DowntownDallas.osm')
+    graph = Graph.networkx_convert(g)
+    graph.create_correlations()
+    graph.write_graph('DowntownDallas.txt')
 
 
 # test_graph = get_test_graph()
