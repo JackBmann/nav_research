@@ -385,20 +385,22 @@ class Graph:
             start_lat = edge[0][0]
             start_long = edge[0][1]
             pos_vert = (start_long, start_lat)
-            start_vert = vertices[pos_vert]
             if pos_vert not in vertices:
                 start_vert = Vertex(identifier, start_lat, start_long)
                 vertices[pos_vert] = start_vert
                 identifier += 1
+            else:
+                start_vert = vertices[pos_vert]
 
             end_lat = edge[1][0]
             end_long = edge[1][1]
             pos_vert = (end_long, end_lat)
-            end_vert = vertices[pos_vert]
             if pos_vert not in vertices:
                 end_vert = Vertex(identifier, end_lat, end_long)
                 vertices[pos_vert] = end_vert
                 identifier += 1
+            else:
+                end_vert = vertices[pos_vert]
             current_edge = Edge(start_vert, end_vert, edge[2])
             edges.append(current_edge)
         parsed_graph = Graph(edges)
