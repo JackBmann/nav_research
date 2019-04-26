@@ -299,9 +299,11 @@ class Graph:
             e_vert = None
             for vert in self.vertices:
                 vert_obj = self.vertices[vert]
-                if vert_obj.get_latitude == implicit_s_vert[0] and vert_obj.get_latitude == implicit_s_vert[1]:
+                if vert_obj.get_latitude == implicit_s_vert[0] and vert_obj.get_latitude == implicit_s_vert[1]\
+                        or vert_obj.get_latitude == implicit_s_vert[1] and vert_obj.get_latitude == implicit_s_vert[0]:
                     s_vert = vert_obj
-                elif vert_obj.get_latitude == implicit_s_vert[0] and vert_obj.get_latitude == implicit_s_vert[1]:
+                elif vert_obj.get_latitude == implicit_e_vert[0] and vert_obj.get_latitude == implicit_e_vert[1]\
+                        or vert_obj.get_latitude == implicit_e_vert[1] and vert_obj.get_latitude == implicit_e_vert[0]:
                     e_vert = vert_obj
 
                 if s_vert and e_vert:
