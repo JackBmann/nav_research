@@ -9,9 +9,10 @@ from random import choice
 class Graph:
     """
     Graph Class
-    :field vertices: A list of vertices contained by the graph (uses vertex objects)
-    :field edges: A dictionary of the edges. Key is a tuple of (src, dest) and value is distance, an int
-    :field connections: a dictionary of edges. Key is source, value is destination
+    :field vertices: A hash of vertex id (an int) to vertex object (uses vertex objects)
+    :field edges: A dictionary of the edges. Key is a tuple of (src, dest) and value is distance, an int, where src
+    and dest are vertex objects
+    :field connections: dictionary of vertex object to vertex object
     :field seen: a table of seen vertices
     """
     vertices = {}  # list of vertices contained by the graph
@@ -299,12 +300,9 @@ class Graph:
             e_vert = None
             for vert in self.vertices:
                 vert_obj = self.vertices[vert]
-                print(vert_obj.get_latitude(), vert_obj.get_longitude(), implicit_s_vert, implicit_e_vert)
-                if (vert_obj.get_latitude() == implicit_s_vert[0] and vert_obj.get_longitude() == implicit_s_vert[1]) or\
-                        (vert_obj.get_latitude() == implicit_s_vert[1] and vert_obj.get_longitude() == implicit_s_vert[0]):
+                if vert_obj.get_latitude() == implicit_s_vert[0] and vert_obj.get_longitude() == implicit_s_vert[1]:
                     s_vert = vert_obj
-                elif (vert_obj.get_latitude() == implicit_e_vert[0] and vert_obj.get_longitude() == implicit_e_vert[1]) or\
-                        (vert_obj.get_latitude() == implicit_e_vert[1] and vert_obj.get_longitude() == implicit_e_vert[0]):
+                elif vert_obj.get_latitude() == implicit_e_vert[0] and vert_obj.get_longitude() == implicit_e_vert[1]:
                     e_vert = vert_obj
 
                 if s_vert and e_vert:
@@ -312,7 +310,14 @@ class Graph:
             if not s_vert or not e_vert:
                 print("One or more Vertices was not valid try again")
                 return
-            edge_obj = self.edges[(s_vert, e_vert)]
+            edge_obj = None
+            if (s_vert, e_vert) in self.edges:
+                edge_obj = self.edges[(s_vert, e_vert)]
+            elif (e_vert, s_vert) in self.edges:
+                edge_obj = self.edges[(e_vert, s_vert)]
+                print("Warning: FOUND REVERSE OF SPECIFIED EDGE")
+            else:
+                print("Specified edge isn't an edge")
             self.jam_edge(edge_obj)
 
     def create_jam(self):
