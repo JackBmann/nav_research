@@ -12,19 +12,28 @@ class Graph:
     :field vertices: A hash of vertex id (an int) to vertex object (uses vertex objects)
     :field edges: A dictionary of the edges. Key is a tuple of (src, dest) and value is distance, an int, where src
     and dest are vertex objects
-    :field connections: dictionary of vertex object to vertex object
-    :field seen: a table of seen vertices
+    :field connections: dictionary of vertex object to vertex object (indicates a connection between key and value)
+    :field seen: a table of seen vertices, used to indicate when a vertex was reached by an algorithm
+    :field node_colors: a hash of a vertex object to its corresponding color
+    :field edge_colors: a hash of (vert1, ver2) to an int representing the color of an edge (derived from optimal_color)
+    :field current_node: an int used to index when nodes are marked
+    :field optimal_color: an int, 2 means the edge is on an optimal path, 1 means it is a jam,
+    0 means it is just an edge
+    :field edge_correlation: a double list, indexed by edge identifiers, containing the correlations between any two
+    edges
+    :field jams: a set of edge objects which indicate that an edge is jammed
+    :field deadline: The deadline that a graph algorithm has to run in, an int
     """
-    vertices = {}  # list of vertices contained by the graph
-    edges = {}  # dictionary of edges in the graph. Key is a tuple of (src,dest) and value is an edge object
-    connections = {}  # dictionary of edges. Key is src, value is dest
+    vertices = {}
+    edges = {}
+    connections = {}
     seen = {}
     node_colors = {}
     edge_colors = {}
     current_node = 0
-    optimal_color = 2  # 2 means the edge is on an optimal path, 1 means it is a jam, 0 means it is just an edge
+    optimal_color = 2
     edge_correlation = []
-    jams = set()    # set of the jammed edges, for traffic model evaluation
+    jams = set()
     deadline = None
 
     def __init__(self, edges, correlations=None, deadline=None):
@@ -32,8 +41,8 @@ class Graph:
         Constructor for the Graph Class
         Currently are bidirectional paths
         :param edges: A list of edges in the graph
-        :param correlations: the correlations which could be passed in
-        :param deadline: the deadline for the graph algorithm, used by one particular heuristic
+        :param OPTIONAL correlations: the correlations which could be passed in
+        :param OPTIONAL deadline: the deadline for the graph algorithm, used by one particular heuristic
         """
 
         # first, reset any coloring or edge_identifiers that are left over
@@ -48,6 +57,8 @@ class Graph:
         vertices = {}
         connections = {}
         parsed_edges = {}
+        # first go through each of the passed in edges and extract vertexes from them
+        # also, convert the edges list into the true edge hash that the graph needs for a field
         for edge in edges:
             first_vertex = edge.first_vertex
             second_vertex = edge.second_vertex
@@ -76,7 +87,8 @@ class Graph:
             self.expand_speeds()
             self.calculate_travel_times()
         if not correlations or len(correlations) == 0:
-            self.edge_correlation = [[None for i in range(len(self.edges))]for j in range(len(self.edges))]  # first fill in the array for the entries
+            # first fill in the list for the entries
+            self.edge_correlation = [[None for i in range(len(self.edges))]for j in range(len(self.edges))]
             # we will arbitrarily fill in the list, so it is necessary to have a properly filled array
             self.create_correlations()
         else:
@@ -87,10 +99,12 @@ class Graph:
     def create_edge_connections(self):
         """
         views the vertexes as edges and the edges as vertexes
-        constructs adjacencies based on that view
+        constructs adjacencies hash
         :return: a dict from an edge to a set of edges representing these adjacencies
         """
         connections = {}
+        # for each edge, see if the second vertex is connected to any other vertexes
+        # if it is, connect edge (first, second) with edge (second, third)
         for edge in self.edges:
             edge_obj = self.edges[edge]
             if edge_obj.identifier not in connections:
@@ -108,14 +122,17 @@ class Graph:
 
     def edge_distance(self):
         """
-        Uses floyd-warshall to fill in the distances
+        finds the distance between any two edges
         :return: void
         """
-        connections = self.create_edge_connections()
+        connections = self.create_edge_connections() # first find out which edges are connected
+        # index distances by edge_id
         distances = [[maxsize for i in range(len(self.edges))] for j in range(len(self.edges))]
+        # if edges are connected, the distance between them is set to 1
         for start_edge in connections:
             for end_edge in connections[start_edge]:
                 distances[start_edge][end_edge] = 1
+        # edges have a zero distance from themselves
         for edge in self.edges:
             edge_obj = self.edges[edge]
             distances[edge_obj.identifier][edge_obj.identifier] = 0
@@ -133,11 +150,13 @@ class Graph:
         """
         Spreads the correlations out through the whole graph
         Currently very slow, distances are being re-calculated
-        Can be solved by passing in a dict in this function
         :return: None
         """
         distances = self.edge_distance()
-        print("Distances is: ", distances)
+        # for each edge, find the distance and use the heuristic of 0.9**distance to create a correlation
+        # not a solid mathematical principle, more of an approximation
+        # potential issue: two-direction roads are correlated. Might make sense in case of a major accident
+        # doesn't make sense in the case of general traffic though
         for edge in self.edges:
             first_edge = self.edges[edge]
             for other_edge in self.edges:
@@ -194,6 +213,7 @@ class Graph:
         """
         self.node_colors = self.seen  # seen already contains information that can be used to color the nodes
         if len(paths) > 1:
+            # if there exists some paths beyond what ie recorded in seen, then node_colors needs to be reset
             self.node_colors = {}
         for j in range(len(paths)):
             path = paths[j]
@@ -201,10 +221,14 @@ class Graph:
                 # if the path doesn't have at least 2 nodes, it is malformed
                 continue
             current_edge = (path[0], path[1])
-            self.edge_colors[current_edge] = self.optimal_color
+            # since the edge is on a path, give it the optimal color
+            self.edge_colors[current_edge] = self.optimal_color + j
             for i in range(2, len(path)):
                 current_edge = (current_edge[1], path[i])
+                # the j iterator is used to distinguish between two different paths to be colored
                 self.edge_colors[current_edge] = self.optimal_color + j
+
+        # jams are always colored 1, regardless of if a path goes through them
         for jam in self.jams:
             self.edge_colors[jam.get_first_vertex(), jam.get_second_vertex()] = 1
 
