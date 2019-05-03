@@ -86,11 +86,11 @@ def test_a_star(graph, start, end):
     graph.clear_colors()
 
 
-def test_parse_osm(osm_path):
+def test_parse_osm(osm_path, title, filename):
     # graph = read_shp(osm_path, False)
     graph = parse_osm(osm_path)
     networkx_graph = graph.convert_networkx()
-    draw_graph(networkx_graph, "OSM Campus", "osm_campus")
+    draw_graph(networkx_graph, title, filename)
     return graph
 
 
@@ -117,20 +117,13 @@ def test_box_roads():
     print_graph(graph)
     start = graph.get_vertex(0)
     end = graph.get_vertex(33)
+    graph.specify_jams([((10, 0), (0, 10))])
     paths = [test_graph_algorithm(graph, dijkstra, start, end, a_star_heuristic, "Box Roads A*"),
              # test_graph_algorithm(graph, dijkstra, start, end, mean_heuristic, "Box Roads Mean"),
              # test_graph_algorithm(graph, dijkstra, start, end, deviation_heuristic, "Box Roads Deviation"),
              test_graph_algorithm(graph, dijkstra, start, end, single_traffic_heuristic, "Box Roads Deviation"),
-             test_graph_algorithm(graph, dijkstra, start, end, normal_dist_traffic, "Box Roads Normal Dist", 100)]
+             test_graph_algorithm(graph, dijkstra, start, end, normal_dist_traffic, "Box Roads Normal Dist", 30)]
     color_convert_draw_graph(graph, paths, "Box Roads", "box_roads")
-
-
-def parse_and_prepare_downtown():
-    g = read_shp('shapefiles/DowntownDallas.shp', False)
-    # graph = parse_osm('shapefiles/DowntownDallas.osm')
-    graph = Graph.networkx_convert(g)
-    graph.create_correlations()
-    graph.write_graph('DowntownDallas.txt')
 
 
 # test_graph = get_test_graph()
@@ -141,7 +134,7 @@ def parse_and_prepare_downtown():
 # test_dijkstra(test_graph, start, end)
 # test_a_star(test_graph, start, end)
 #
-# osm_graph = test_parse_osm('shapefiles/OSMCampus.osm')
+# osm_graph = test_parse_osm('shapefiles/OSMCampus.osm', "OSM Campus", "osm_campus")
 # print_graph(osm_graph)
 # start = osm_graph.get_vertex(list(osm_graph.vertices.keys())[0])
 # end = osm_graph.get_vertex(list(osm_graph.vertices.keys())[47])
@@ -149,5 +142,4 @@ def parse_and_prepare_downtown():
 # test_osm_dijkstra(osm_graph, start, end)
 # test_osm_a_star(osm_graph, start, end)
 
-# test_box_roads()
-parse_and_prepare_downtown()
+test_box_roads()
