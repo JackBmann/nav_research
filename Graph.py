@@ -122,7 +122,8 @@ class Graph:
 
     def edge_distance(self):
         """
-        finds the distance between any two edges
+        finds the distance between each pair of edges in the graph
+        uses floyd-warshall to find the distances
         :return: void
         """
         connections = self.create_edge_connections() # first find out which edges are connected
@@ -171,8 +172,8 @@ class Graph:
     def connected(self, src, dest):
         """
         Checks if two vertices are immediately connected in the graph
-        :param src: the source vertex
-        :param dest: the destination vertex
+        :param src: the source vertex (a vertex object)
+        :param dest: the destination vertex (a vertex object)
         :return: boolean connected
         """
         if dest in self.connections[src]:
@@ -182,8 +183,9 @@ class Graph:
     def get_vertex(self, vertex_id):
         """
         Returns the vertex object associated with the id
+        Mainly a way to translate from integer representations of vertices to the actual objects
         :param vertex_id: the id of the vertex
-        :return: vertex, the found vertex
+        :return: vertex, the found vertex object
         """
         vertex = self.vertices[vertex_id]
         return vertex
@@ -191,16 +193,22 @@ class Graph:
     def distance(self, src, dest):
         """
         Finds the distance between two connected vertices
-        :param src: the source vertex
-        :param dest: the destination vertex
+        :param src: the source vertex (a vertex object)
+        :param dest: the destination vertex (a vertex object)
         :return: number dist, which is non-zero unless src == dest or connected(src,dest) == False
         """
         if not self.connected(src, dest):
             return 0
         else:
-            return self.edges[(src, dest)].weight
+            return self.edges[(src, dest)].average_time
 
     def add_seen(self, vertex):
+        """
+        Function to allow marking of nodes as they are discovered by a search algorithm
+        Mostly for use in determining node coloration
+        :param vertex: a vertex object
+        :return: None
+        """
         if vertex not in self.seen:
             self.seen[vertex] = self.current_node
             self.current_node += 1
@@ -208,8 +216,8 @@ class Graph:
     def color_graph(self, paths):
         """
         Colors a graph's edges and vertices
-        :param paths: the optimal paths to be highlighted in the display (list of lists)
-        :return: void, all changes will be made to structures in the graph object
+        :param paths: the optimal paths to be highlighted in the display (list of lists of vertex objects)
+        :return: None, all changes will be made to structures in the graph object
         """
         self.node_colors = self.seen  # seen already contains information that can be used to color the nodes
         if len(paths) > 1:
@@ -235,6 +243,7 @@ class Graph:
     def zero_speed_limit(self):
         """
         finds if any roads have no speed_limit
+        This is to indicate if there is a need for expansion of existing speed limits
         :return: boolean (true if exists, false otherwise)
         """
         for edge in self.edges:
@@ -245,6 +254,7 @@ class Graph:
     def positive_speed_limit(self):
         """
         finds if any road has a speed_limit
+        This is to indicate if we can expand a speed limit anywhere
         :return: boolean (true if exists, false otherwise)
         """
         for edge in self.edges:
@@ -255,23 +265,34 @@ class Graph:
     def expand_speeds(self):
         """
         expands the speed limit of valid roads to 0-marked roads
+        Views the edges as nodes of a graph and the vertices as edges of a graph
+        Two edges are connected if they share a node in common
         :return: None
         """
         while self.zero_speed_limit():
             for vertex_id, first_vert in enumerate(self.vertices):
                 if first_vert not in self.connections:
+                    # if the vertex isn't connected to anything, there is no edge to evaluate
                     continue
                 for second_vert in self.connections[first_vert]:
+                    # if there is an edge to be evaluated, grab the edge object
                     start_edge = self.edges[(first_vert, second_vert)]
                     if start_edge.get_speed_limit() == 0:
+                        # if the edge doesn't have a speed limit, try to grab one from a neighbor that does
+                        # only goes "forward"
+                        # (1,2) will only discover (2,3) and not (0,1), this is corrected by the else
                         if second_vert not in self.connections:
                             continue
                         for third_vert in self.connections[second_vert]:
                             current_limit = self.edges[(second_vert, third_vert)].get_speed_limit()
                             if current_limit == 0:
+                                # if we can't grab a speed limit from this new edge, just continue
                                 continue
                             if current_limit > 40:
+                                # if we can grab a speed limit , grab it and reduce by 5
                                 current_limit -= 5
+                                # however, never reduce the speed limit below 40 (this is to stop edges from having
+                                # obscenely low speed limits like 5mph
                                 if current_limit < 40:
                                     current_limit = 40
                             start_edge.speed_limit = current_limit
@@ -284,11 +305,18 @@ class Graph:
                             current_limit -= 5
                             if current_limit < 40:
                                 current_limit = 40
+                        # if you have a speed limit, spread forward to edges that don't
+                        # (1,2) won't see (0,1) but (0,1) will see (1,2) this way everything (1,2) is connected to
+                        # will interact with (1,2)
                         for third_vert in self.connections[second_vert]:
                             if self.edges[(second_vert, third_vert)].get_speed_limit() == 0:
                                 self.edges[(second_vert, third_vert)].speed_limit = current_limit
 
     def calculate_travel_times(self):
+        """
+        Calculates the travel time of an edge based on the speed limit of that edge and the distance
+        :return:
+        """
         for edge in self.edges:
             if not self.edges[edge].get_average_time():
                 speed = self.edges[edge].get_speed_limit()
@@ -303,6 +331,8 @@ class Graph:
         """
         remove_list = [] # can't change set size during iteration, so need a holder
         for jam in self.jams:
+            # would just reset the jams, but we also need to cut down the average travel time from the earlier
+            # inflatement
             remove_list.append(jam)
             jam.average_time /= 2
 
@@ -313,15 +343,16 @@ class Graph:
         """
         Jams specific edges specified in coords
         Will remove all other jams
-        :param coords: the list of ((x1, x2) ,(y1,y2)) pairs where x1 and x2 / y1 and y2 are coordinates of vertices
+        :param coords: the list of ((x1, y1) ,(x2,y2)) where x1 and x2 are latitude coordinates of vertices and y1 and
+        y2 are longitude coordinates of vertices
         :return: None
         """
-        self.clear_jams()
+        self.clear_jams()  # if you want to specify an edge to jam, you must specify all edges to be jammed
         for implicit_edge in coords:
             implicit_s_vert = implicit_edge[0]
             implicit_e_vert = implicit_edge[1]
-            s_vert = None
-            e_vert = None
+            s_vert = None  # meant to hold the starting vertex object once identified
+            e_vert = None  # meant to hold the starting vertex object once identified
             for vert in self.vertices:
                 vert_obj = self.vertices[vert]
                 if vert_obj.get_latitude() == implicit_s_vert[0] and vert_obj.get_longitude() == implicit_s_vert[1]:
@@ -335,9 +366,11 @@ class Graph:
                 print("One or more Vertices was not valid try again")
                 return
             edge_obj = None
+            # finds the edge object of the specified edge
             if (s_vert, e_vert) in self.edges:
                 edge_obj = self.edges[(s_vert, e_vert)]
             elif (e_vert, s_vert) in self.edges:
+                # currently will allow a user to specify the reverse of an edge
                 edge_obj = self.edges[(e_vert, s_vert)]
                 print("Warning: FOUND REVERSE OF SPECIFIED EDGE")
             else:
@@ -345,10 +378,15 @@ class Graph:
             self.jam_edge(edge_obj)
 
     def create_jam(self):
+        """
+        Jams a single edge chosen at random
+        :return:
+        """
         # this code found at: https://stackoverflow.com/questions/4859292/how-to-get-a-random-value-in-python-dictionary
         vert_edge = choice(list(self.edges.keys()))
         true_edge = self.edges[vert_edge]
         while true_edge in self.jams:
+            # if we choose an edge that is already jammed, keep trying until we get an edge that is not jammed
             vert_edge = choice(list(self.edges.keys()))
             true_edge = self.edges[vert_edge]
         self.jam_edge(true_edge)
@@ -356,20 +394,25 @@ class Graph:
     def jam_edge(self, edge):
         """
         Jams an individual Edge
-        :param edge: the edge to be jammed
+        :param edge: the edge to be jammed (an edge object)
         :return: None
         """
         edge.average_time *= 2
         self.jams.add(edge)
 
     def create_jams(self, num_jams):
+        """
+        Handler function for repeat calls of create_jams
+        :param num_jams: an int, representing the number of jams
+        :return: None
+        """
         for i in range(num_jams):
             self.create_jam()
 
     def clear_colors(self):
         """
-        clears the seen hash_table which marks nodes
-        :return: void
+        Clears all of the variables used to store colors
+        :return: None
         """
         self.seen = {}
         self.edge_colors = {}
@@ -417,6 +460,7 @@ class Graph:
             start_lat = edge[0][0]
             start_long = edge[0][1]
             pos_vert = (start_long, start_lat)
+            # first parse the input vertices based on the given lats and long
             if pos_vert not in vertices:
                 start_vert = Vertex(identifier, start_lat, start_long)
                 vertices[pos_vert] = start_vert
@@ -433,6 +477,7 @@ class Graph:
                 identifier += 1
             else:
                 end_vert = vertices[pos_vert]
+            #  then create the edge and append it (edge[2] is the distance)
             current_edge = Edge(start_vert, end_vert, edge[2])
             edges.append(current_edge)
         parsed_graph = Graph(edges)
@@ -458,6 +503,7 @@ class Graph:
                 if line == '':
                     continue
 
+                # flag marking for the purposes of discovering which part of the graph sav file is to be processed
                 if line == "VERTICES":
                     edge_flag = 0
                     vertices_flag = 1
@@ -508,8 +554,11 @@ class Graph:
     def write_graph(self, file_name):
         """
         Writes a graph to a file, so that it can be retrieved later
+        Graphs are written in 3 sections: Vertices (which has lat, long, and id), Edges (which have first_vertex id,
+        second_vertex id, average_time, speed_limit, average_speed, and standard_deviation of speed), and Correlations
+        which are indexed by edge_id
         :param file_name: the name of the file to be written out
-        :return: Null
+        :return: None
         """
         with open(file_name, 'w+') as write_file:
             output_string = "VERTICES" + '\n'
@@ -528,11 +577,11 @@ class Graph:
             output_string += '\n'
             out_edges = sorted(self.edges.values())
             for edge in out_edges:
-                output_string += str(edge.first_vertex)
+                output_string += str(edge.first_vertex)  # casting a vert to a string casts the vert's id to a string
                 output_string += ','
                 output_string += str(edge.second_vertex)
                 output_string += ','
-                output_string += str(edge.weight)
+                output_string += str(edge.average_time)
                 output_string += ','
                 output_string += str(edge.speed_limit)
                 output_string += ','
@@ -568,8 +617,8 @@ class Vertex:
     """
     Vertex object for use in the graph
     :field identifier: the identifier value, an int
-    :field latitude: the first gps coordinate in the pair
-    :field longitude: the second gps coordinate in the pair
+    :field latitude: the first gps coordinate in the pair an int/float
+    :field longitude: the second gps coordinate in the pair an int/float
     """
     identifier = 0  # basic initialization for id, should not be left at 0
     latitude = 0.0  # basic initialization for latitude, should not be left at 0.0
@@ -603,34 +652,37 @@ class Vertex:
     def get_identifier(self):
         """
         Gets the id for the vertex
-        :return: id
+        :return: identifier an int
         """
         return self.identifier
 
     def get_latitude(self):
         """
         Gets the latitude value for the vertex
-        :return: latitude
+        :return: latitude a float
         """
         return self.latitude
 
     def get_longitude(self):
         """
         Gets the longitude value for the vertex
-        :return: longitude
+        :return: longitude a float
         """
         return self.longitude
 
 
-edge_identifier_iterator = 0
+edge_identifier_iterator = 0  # used to auto_increment edges, has to maintain state so will be global
 
 
 class Edge:
     """
     Edge object for use in the Graph
+    :field identifier:
     :field first_vertex: The first vertex of the edge, a vertex object
     :field second_vertex: The second vertex of the edge, a vertex object
     :field distance: the distance of the edge, an int/float
+    :field average_time: the average time required to cross the edge, an int/float
+    :field standard_deviation_time: the standard deviation of speeds across this edge an int/float
     :field speed_limit: the speed limit on this edge
     :field average_speed: the average speed of traffic across this edge
     :field standard_deviation_speed: the standard deviation of speeds across this edge
@@ -652,11 +704,11 @@ class Edge:
         :param first_vertex: The first vertex of the edge, a vertex object
         :param second_vertex: The second vertex of the edge, a vertex object
         :param distance: the distance of the edge, an int/float
-        :param average_time: the average total time to travel across this edge
-        :param standard_deviation_time: the standard deviation of travel time across this edge
-        :param speed_limit: the speed limit on this edge
-        :param average_speed: the average speed of traffic across this edge
-        :param standard_deviation_speed: the standard deviation of speeds across this edge
+        :param average_time: the average total time to travel across this edge an int/float
+        :param standard_deviation_time: the standard deviation of travel time across this edge an int/float
+        :param speed_limit: the speed limit on this edge an int (unless a speed limit is given in as a float)
+        :param average_speed: the average speed of traffic across this edge an int/float
+        :param standard_deviation_speed: the standard deviation of speeds across this edge an int/float
         """
         global edge_identifier_iterator
         self.identifier = edge_identifier_iterator
@@ -674,6 +726,7 @@ class Edge:
         return "{0} -> {1} @ {2}".format(str(self.first_vertex), str(self.second_vertex), str(self.speed_limit))
 
     def __cmp__(self, other):
+        # edges are compared based on ids
         if self.identifier < other.id:
             return -1
         if self.identifier == other.id:
