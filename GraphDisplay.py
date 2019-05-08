@@ -1,6 +1,7 @@
-# Generates and displays a networkx graph to an html file
-# Based off of code found here: https://plot.ly/python/network-graphs/
-
+"""
+Generates and displays a networkx graph to an html file using plotly
+Based off of code found here: https://plot.ly/python/network-graphs/
+"""
 import plotly
 import plotly.graph_objs as go
 import networkx as nx
@@ -8,6 +9,15 @@ from sys import maxsize
 
 
 def generate_graph(graph):
+    """
+    Given a Graph.py representation of a graph, creates a networkx graph, g.
+    The function adds the vertices and edges in graph to g, translating the graph
+    to the origin and scaling its coordinates down by n.
+    This function was originally use to convert graphs to networkx before they were
+    displayed by draw_graph(), however, it has been replaced by Graph.convert_networkx().
+    :param graph: a Graph.py representation of a graph
+    :return: a networkx representation of graph, scaled and translated
+    """
     g = nx.Graph()
     pos = {}
     min_latitude = maxsize
@@ -32,7 +42,9 @@ def generate_graph(graph):
 
 def get_color(key):
     """
-    gets the color for a node based on its integer value representation
+    Returns a unique RGB value given a number.
+    Used to color each node uniquely based on its identifier.
+    Currently unused
     :param key: an integer value
     :return: (r,g,b), where r,g,b are ints between 0 and 256
     """
@@ -43,33 +55,29 @@ def get_color(key):
 
 
 def draw_graph(graph, title, filename):
-    # g = generate_graph(graph)
-    g = graph
-    # print(g.edges)
-    pos = nx.get_node_attributes(g, 'pos')
-    dmin = 1
-    # ncenter = 0
-    for n in pos:
-        x, y = pos[n]
-        d = (x - 0.5) ** 2 + (y - 0.5) ** 2
-        if d < dmin:
-            # ncenter = n
-            dmin = d
-
-    # p = nx.single_source_shortest_path_length(g, ncenter)
+    """
+    Given a networkx graph, display the graph in an interactable HTML file using plotly.
+    The HTML file will automatically open after it is generated.
+    :param graph: the networkx graph to be displayed
+    :param title: the title to display above the graph
+    :param filename: the name to save the HTML file as in nav-research/graph_displays/generated/
+    """
+    # graph = generate_graph(graph)
 
     edge_trace = []
-
-    for edge in g.edges(data=True):
+    for edge in graph.edges(data=True):
         x0, y0 = edge[0]
         x1, y1 = edge[1]
+
+        # Determine the color of the edge based on its previously generated color value
         jam_or_path = edge[2].get('color')
-        # No Jam, no path
+        # If the edge has no Jam and no path then it will be black
         color = 'black'
         # If an edge is jammed it is colored red
         if jam_or_path == 1:
             color = 'red'
-        # Path 1, 2, 3, 4 all have different colored edges
+        # If an edge is part of a path it will be colored with the same color as the other edges in that path.
+        # GraphDisplay currently shows up to 4 uniquely colored paths at a time, more can be shown with additions here.
         elif jam_or_path == 2:
             color = 'green'
         elif jam_or_path == 3:
@@ -78,7 +86,11 @@ def draw_graph(graph, title, filename):
             color = 'yellow'
         elif jam_or_path == 5:
             color = 'purple'
+
+        # Display the weight of an edge when you hover over it on the displayed graph.
         weight = "Edge Weight: " + str(edge[2].get('weight'))
+
+        # Create a scatter plot with just this edge and append it to the list of edges
         edge_trace.append(go.Scatter(
             x=[x0, x1],
             y=[y0, y1],
@@ -86,6 +98,8 @@ def draw_graph(graph, title, filename):
             text=weight,
             hoverinfo='text',
             line=dict(width=5, color=color)))
+
+    # Create a scatter plot of the nodes with a scale based on their discover time
     node_trace = go.Scatter(
         x=[],
         y=[],
@@ -110,8 +124,8 @@ def draw_graph(graph, title, filename):
             ),
             line=dict(width=2)))
 
-    for node in g.nodes():
-        # x, y = g.node[node]['pos']
+    # Append the node coordinates to the node_trace
+    for node in graph.nodes():
         x, y = node
         node_trace['x'] += tuple([x])
         node_trace['y'] += tuple([y])
@@ -119,8 +133,8 @@ def draw_graph(graph, title, filename):
     node_hash = {}
     max_node = 0
     done = set()
-    for node, adjacencies in enumerate(g.adjacency()):
-        node_info = "Node "
+    for node, adjacencies in enumerate(graph.adjacency()):
+        # Give each node an identifier based when we discover it here, check for duplicate nodes
         n = adjacencies[0]
         identifier = ""
         if n in node_hash:
@@ -129,14 +143,16 @@ def draw_graph(graph, title, filename):
             node_hash[n] = max_node
             identifier = max_node
             max_node += 1
-
         if identifier in done:
             print("NEW NODE, SAME GPS", identifier)
         else:
             done.add(identifier)
-        node_info += str(identifier)
-        '''
-        node_info += ": connected to "
+
+        # Show a node's identifier when you hover over it on the displayed graph
+        node_info = "Node " + str(identifier)
+
+        # Append a node's connections to the text to display when you hover over a node on the graph
+        node_info += ": connected to: ["
         for item in adjacencies[1]:
             node_number = ""
             if item in node_hash:
@@ -147,14 +163,20 @@ def draw_graph(graph, title, filename):
                 max_node += 1
             node_info += str(node_number)
             node_info += ", "
-        node_info = node_info[:-2]
-        '''
-        node_info += " is at: " + str(n[0]) + "," + str(n[1])
-        # change color stuff
-        node_trace['marker']['color'] += tuple([g.nodes[n]['color']])
-        #  node_info = '# of connections: ' + str(len(adjacencies[1]))
+        node_info = node_info[:-2] + "]"
+
+        # Append the coordinates of a node to the text that shows when you hover over it
+        node_info += " is at: (" + str(n[0]) + "," + str(n[1]) + ")"
+
+        # Append the number of connections it has to the displayed text
+        node_info += ' # of connections: ' + str(len(adjacencies[1]))
+
         node_trace['text'] += tuple([node_info])
 
+        # Color the node based on its given color value
+        node_trace['marker']['color'] += tuple([graph.nodes[n]['color']])
+
+    # Put the edges and nodes into one figure, generate the display, and save it at the below path
     trace = edge_trace
     trace.append(node_trace)
     fig = go.Figure(data=trace,
@@ -173,5 +195,4 @@ def draw_graph(graph, title, filename):
                             x=0.005, y=-0.002)],
                         xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
                         yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)))
-
     plotly.offline.plot(fig, filename='./graph_displays/generated/'+filename+'.html')
