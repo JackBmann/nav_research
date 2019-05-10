@@ -71,6 +71,11 @@ def max_speed(tags):
 
 
 def parse_osm(path):
+    """
+    Given a path to an OSM extract, read the file line by line and construct a graph from nodes and ways (edges).
+    :param path: a path to an .osm file relative to this file.
+    :return: A Graph.py representation of a graph.
+    """
     vertices = {}
     edges = []
     ways = {}

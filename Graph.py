@@ -1,5 +1,6 @@
 """
 Created By Michael Bolot and John (Jack) Baumann for Fall 2018 - Spring 2019 research
+Houses functions to construct Nodes, Edges, and Graphs
 """
 import networkx
 from sys import maxsize

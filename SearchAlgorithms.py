@@ -1,6 +1,6 @@
 """
-Created by Michael Bolot and John (Jack) Baumann for 2018 research
-Designed to house the search algorithms to be used on the graph
+Created by Michael Bolot and John (Jack) Baumann for 2018-19 research
+Houses the search algorithms and heuristic functions to be run on a graph
 """
 from queue import PriorityQueue
 from sys import maxsize
